@@ -1,0 +1,296 @@
+
+version: 1.0.0
+client:
+
+  organization: Csair
+
+  logging:
+    level: info
+
+  cryptoconfig:
+    path: /root/go/src/atc/fabric/crypto-config
+
+  credentialStore:
+
+    path: "/tmp/state-store"
+
+    cryptoStore:
+      # Specific to the underlying KeyValueStore that backs the crypto key store.
+      path: /tmp/msp
+
+  BCCSP:
+    security:
+      enabled: true
+      default:
+        provider: "SW"
+      hashAlgorithm: "SHA2"
+      softVerify: true
+      level: 256
+
+  tlsCerts:
+    # [Optional]. Use system certificate pool when connecting to peers, orderers (for negotiating TLS) Default: false
+    systemCertPool: true
+
+    # [Optional]. Client key and cert for TLS handshake with peers and orderers
+    client:
+      key:
+        path: /root/go/src/atc/fabric/crypto-config/peerOrganizations/csair.atc.com/users/User1@csair.atc.com/tls/client.key
+      cert:
+        path: /root/go/src/atc/fabric/crypto-config/peerOrganizations/csair.atc.com/users/User1@csair.atc.com/tls/client.crt
+
+
+channels:
+  # multi-org test channel
+  mychannel:
+    peers:
+      info_department.eastchina.atc.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+      info_department.northchina.atc.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+      info_department.airchina.atc.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+      info_department.csair.atc.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+
+
+    policies:
+      queryChannelConfig:
+        minResponses: 1
+        maxTargets: 1
+        retryOpts:
+          attempts: 5
+          initialBackoff: 500ms
+          maxBackoff: 5s
+          backoffFactor: 2.0
+
+    discovery:
+      #[Optional] discovery info will be retrieved for these number of random targets
+      maxTargets: 2
+      #[Optional] retry options for retrieving discovery info
+      retryOpts:
+        #[Optional] number of retry attempts
+        attempts: 4
+        #[Optional] the back off interval for the first retry attempt
+        initialBackoff: 500ms
+        #[Optional] the maximum back off interval for any retry attempt
+        maxBackoff: 5s
+        #[Optional] he factor by which the initial back off period is exponentially incremented
+        backoffFactor: 2.0
+#
+# list of participating organizations in this nettestwork
+#
+organizations:
+  EastChina:
+    mspid: EastChinaMSP
+
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/eastchina.atc.com/users/{username}@eastchina.atc.com/msp
+
+    peers:
+      - info_department.eastchina.atc.com
+
+  NorthChina:
+    mspid: NorthChinaMSP
+
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/northchina.atc.com/users/{username}@northchina.atc.com/msp
+
+    peers:
+      - info_department.northchina.atc.com
+
+
+  AirChina:
+    mspid: AirChinaMSP
+
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/airchina.atc.com/users/{username}@airchina.atc.com/msp
+
+    peers:
+      - info_department.airchina.atc.com
+
+
+  Csair:
+    mspid: CsairMSP
+
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/csair.atc.com/users/{username}@csair.atc.com/msp
+
+    peers:
+      - info_department.csair.atc.com
+
+
+
+  # Orderer Org name
+  atcorderer:
+    # Membership Service Provider ID for this organization
+    mspID: ATCOrdererMSP
+
+    # Needed to load users crypto keys and certs for this org (absolute path or relative to global crypto path, DEV mode)
+    cryptoPath: ordererOrganizations/atc.com/users/{username}@atc.com/msp
+
+
+#
+# List of orderers to send transaction and channel create/update requests to. For the time
+# being only one orderer is needed. If more than one is defined, which one get used by the
+# SDK is implementation specific. Consult each SDK's documentation for its handling of orderers.
+#
+orderers:
+
+
+  orderer.atc.com:
+    # [Optional] Default: Infer from hostname
+    url: orderer.atc.com:7050
+
+    # these are standard properties defined by the gRPC library
+    # they will be passed in as-is to gRPC client constructor
+    grpcOptions:
+      ssl-target-name-override: orderer.atc.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: /root/go/src/atc/fabric/crypto-config/ordererOrganizations/atc.com/tlsca/tlsca.atc.com-cert.pem
+
+#
+# List of peers to send various requests to, including endorsement, query
+# and event listener registration.
+#
+peers:
+
+  info_department.eastchina.atc.com:
+    # this URL is used to send endorsement and query requests
+    # [Optional] Default: Infer from hostname
+    url: info_department.eastchina.atc.com:7051
+    grpcOptions:
+      ssl-target-name-override: info_department.eastchina.atc.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+    #grpcOptions:
+    #  ssl-target-name-override: peer0.org1.example.com
+
+    tlsCACerts:
+      # Certificate location absolute pathairchina.publisher.atc
+      path: /root/go/src/atc/fabric/crypto-config/peerOrganizations/eastchina.atc.com/tlsca/tlsca.eastchina.atc.com-cert.pem
+
+
+  info_department.northchina.atc.com:
+    url: info_department.northchina.atc.com:7061
+    #grpcOptions:
+    #  ssl-target-name-override: peer0.org1.example.com
+    grpcOptions:
+      ssl-target-name-override: info_department.northchina.atc.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+    tlsCACerts:
+      path: /root/go/src/atc/fabric/crypto-config/peerOrganizations/northchina.atc.com/tlsca/tlsca.northchina.atc.com-cert.pem
+
+
+
+  info_department.airchina.atc.com:
+    # this URL is used to send endorsement and query requests
+    # [Optional] Default: Infer from hostname
+    url: info_department.airchina.atc.com:8051
+    grpcOptions:
+      ssl-target-name-override: info_department.airchina.atc.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+    #grpcOptions:
+    #  ssl-target-name-override: peer0.org1.example.com
+
+    tlsCACerts:
+      # Certificate location absolute pathumetrip.recipient.atc
+      path: /root/go/src/atc/fabric/crypto-config/peerOrganizations/airchina.atc.com/tlsca/tlsca.airchina.atc.com-cert.pem
+
+
+  info_department.csair.atc.com:
+    url: info_department.csair.atc.com:8061
+    #grpcOptions:
+    #  ssl-target-name-override: peer0.org1.example.com
+    grpcOptions:
+      ssl-target-name-override: info_department.csair.atc.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+    tlsCACerts:
+      path: /root/go/src/atc/fabric/crypto-config/peerOrganizations/csair.atc.com/tlsca/tlsca.csair.atc.com-cert.pem
+
+
+entityMatchers:
+  peer:
+    - pattern: (\w+).atc.com:(\d+)
+      urlSubstitutionExp: ${1}.atc.com:${2}
+      sslTargetOverrideUrlSubstitutionExp: ${1}.atc.com
+      mappedHost: info_department.eastchina.atc.com
+
+    - pattern: (\w+).atc.com:(\d+)
+      urlSubstitutionExp: ${1}.atc.com:${2}
+      sslTargetOverrideUrlSubstitutionExp: ${1}.atc.com
+      mappedHost: info_department.northchina.atc.com
+
+    - pattern: (\w+).atc.com:(\d+)
+      urlSubstitutionExp: ${1}.atc.com:${2}
+      sslTargetOverrideUrlSubstitutionExp: ${1}.atc.com
+      mappedHost: info_department.airchina.atc.com
+
+    - pattern: (\w+).atc.com:(\d+)
+      urlSubstitutionExp: ${1}.atc.com:${2}
+      sslTargetOverrideUrlSubstitutionExp: ${1}.atc.com
+      mappedHost: info_department.csair.atc.com
+
+  orderer:
+    - pattern: (\w+).atc.(\w+)
+      urlSubstitutionExp: orderer.atc.com:7050
+      sslTargetOverrideUrlSubstitutionExp: orderer.atc.com
+      mappedHost: orderer.atc.com
+

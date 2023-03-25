@@ -1,0 +1,9 @@
+go 1.18
+
+use (
+	./
+	./atc_backend
+	./blockchain_serv/sdk
+	./blockchain_serv/service
+	./chaincode
+)

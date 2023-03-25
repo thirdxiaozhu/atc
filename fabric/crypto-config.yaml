@@ -1,0 +1,56 @@
+
+# ---------------------------------------------------------------------------
+# "OrdererOrgs" - Definition of organizations managing orderer nodes
+# ---------------------------------------------------------------------------
+OrdererOrgs:
+  - Name: Orderer
+    Domain: atc.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: orderer
+
+# ---------------------------------------------------------------------------
+# "PeerOrgs" - Definition of organizations managing peer nodes
+# ---------------------------------------------------------------------------
+PeerOrgs:
+  - Name: EastChina
+    Domain: eastchina.atc.com
+    EnableNodeOUs: true
+    #Template:
+    #  Count: 2
+    Users:
+      Count: 1
+    Specs:
+      - Hostname: info_department
+
+  - Name: NorthChina
+    Domain: northchina.atc.com
+    EnableNodeOUs: true
+    #Template:
+    #  Count: 2
+    Users:
+      Count: 1
+    Specs:
+      - Hostname: info_department
+
+  - Name: AirChina
+    Domain: airchina.atc.com
+    EnableNodeOUs: true
+    #Template:
+    #  Count: 2
+    Users:
+      Count: 1
+    Specs:
+      - Hostname: info_department
+
+  - Name: Csair
+    Domain: csair.atc.com
+    EnableNodeOUs: true
+    #Template:
+    #  Count: 2
+    Users:
+      Count: 1
+    Specs:
+      - Hostname: info_department
+
+

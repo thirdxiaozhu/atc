@@ -1,0 +1,237 @@
+Organizations:
+    - &ATCOrderer
+        Name: ATCOrderer
+        ID: ATCOrdererMSP
+        MSPDir: ./crypto-config/ordererOrganizations/atc.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('ATCOrdererMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('ATCOrdererMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('ATCOrdererMSP.admin')"
+
+    - &EastChina
+        Name: EastChina
+        ID: EastChinaMSP
+        MSPDir: ./crypto-config/peerOrganizations/eastchina.atc.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('EastChinaMSP.admin', 'EastChinaMSP.peer', 'EastChinaMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('EastChinaMSP.admin', 'EastChinaMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('EastChinaMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('EastChinaMSP.peer')"
+
+        AnchorPeers:
+            - Host: info_department.eastchina.atc.com
+              Port: 7051
+
+    - &NorthChina
+        Name: NorthChina
+        ID: NorthChinaMSP
+        MSPDir: ./crypto-config/peerOrganizations/northchina.atc.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('NorthChinaMSP.admin', 'NorthChinaMSP.peer', 'NorthChinaMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('NorthChinaMSP.admin', 'NorthChinaMSP.client')"
+                #Rule: "OR('Org2MSP.admin')"
+            Admins:
+                Type: Signature
+                Rule: "OR('NorthChinaMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('NorthChinaMSP.peer')"
+
+        AnchorPeers:
+            - Host: info_department.northchina.atc.com
+              Port: 7061
+
+    - &AirChina
+        Name: AirChina
+        ID: AirChinaMSP
+        MSPDir: ./crypto-config/peerOrganizations/airchina.atc.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('AirChinaMSP.admin', 'AirChinaMSP.peer', 'AirChinaMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('AirChinaMSP.admin', 'AirChinaMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('AirChinaMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('AirChinaMSP.peer')"
+
+        AnchorPeers:
+            - Host: info_department.airchina.atc.com
+              Port: 8051
+
+    - &Csair
+        Name: Csair
+        ID: CsairMSP
+        MSPDir: ./crypto-config/peerOrganizations/csair.atc.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('CsairMSP.admin', 'CsairMSP.peer', 'CsairMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('CsairMSP.admin', 'CsairMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('CsairMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('CsairMSP.peer')"
+
+        AnchorPeers:
+            - Host: info_department.csair.atc.com
+              Port: 8061
+
+
+Capabilities:
+    Channel: &ChannelCapabilities
+        V2_0: true
+    Orderer: &OrdererCapabilities
+        V2_0: true
+    Application: &ApplicationCapabilities
+        V2_0: true
+
+Application: &ApplicationDefaults
+
+    Organizations:
+
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+
+    OrdererType: solo
+
+    Addresses: # orderer 集群节点
+        - orderer.atc.com:7050
+    BatchTimeout: 2s
+
+    # Batch Size: Controls the number of messages batched into a block
+    BatchSize:
+
+        MaxMessageCount: 10
+
+        AbsoluteMaxBytes: 99 MB
+
+        PreferredMaxBytes: 512 KB
+
+    Organizations:
+
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        # BlockValidation specifies what signatures must be included in the block
+        # from the orderer for the peer to validate it.
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+Channel: &ChannelDefaults
+
+    Policies:
+        # Who may invoke the 'Deliver' API
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        # Who may invoke the 'Broadcast' API
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        # By default, who may modify elements at this config level
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ChannelCapabilities
+
+Profiles:
+    TwoOrgsChannel:
+        Consortium: SampleConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *EastChina
+                - *NorthChina
+                - *AirChina
+                - *Csair
+            Capabilities:
+                <<: *ApplicationCapabilities
+    
+    TwoOrgsOrdererGenesis:
+        <<: *ChannelDefaults
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *ATCOrderer
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+                    - *EastChina
+                    - *NorthChina
+                    - *AirChina
+                    - *Csair
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
