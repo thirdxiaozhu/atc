@@ -12,7 +12,7 @@ type PublisherController struct {
 }
 
 func (u *PublisherController) PostAtc() {
-	transid, err := models.PostAtc(u.GetString("userid"), u.GetString("msgtype"), u.GetString("content"))
+	transid, err := models.PostAtc(u.GetString("userid"), u.GetString("msgtype"), u.GetString("content"), u.GetString("timestamp"))
 
 	var ret_code int
 	var ret_data string
@@ -28,6 +28,18 @@ func (u *PublisherController) PostAtc() {
 	u.Data["json"] = JsonResponse{
 		Code: ret_code,
 		Data: ret_data,
+	}
+	u.ServeJSON()
+}
+
+func (u *PublisherController) GetAtcs() {
+	paralist := [4]string{u.GetString("publisher"), u.GetString("company"), u.GetString("starttime"), u.GetString("endtime")}
+
+	atc_rets := models.GetAtcs(u.GetString("userid"), paralist[:])
+
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: &atc_rets,
 	}
 	u.ServeJSON()
 }

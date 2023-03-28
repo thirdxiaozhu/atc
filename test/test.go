@@ -9,7 +9,7 @@ import (
 )
 
 func query(servicesetup *service.ServiceSetup) {
-	result, err := servicesetup.FindAtcInfoByID("20d23a24-b9e0-4946-89e1-6d7a8c761584")
+	result, err := servicesetup.FindAtcInfoByID("b44518be-56de-4495-9a0b-8754d178bf07 1679925069945")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -21,8 +21,8 @@ func query(servicesetup *service.ServiceSetup) {
 
 }
 
-func queryByPublisher(servicesetup *service.ServiceSetup, querystr string) {
-	result, err := servicesetup.FindAtcByPublisher(querystr)
+func queryByString(servicesetup *service.ServiceSetup, querystr string) {
+	result, err := servicesetup.FindAtcByQueryString(querystr)
 	fmt.Println(result)
 
 	var atcs []service.Atc
@@ -121,12 +121,14 @@ func main() {
 	//save(servicesetup, atc)
 	//query(servicesetup)
 
-	pb_map := map[string]string{"Publisher": "nc"}
+	pb_map := map[string]string{"Publisher": "ec", "Company": "eastchina"}
 	fmt.Println(pb_map)
 	fmt.Println(MapToJson(pb_map))
-	map_str := MapToJson(pb_map)
+	//map_str := MapToJson(pb_map)
 
-	queryByPublisher(servicesetup, map_str)
+	//queryByString(servicesetup, map_str)
+	//queryByString(servicesetup, "{\"Publisher\": \"ec\"}")
+	queryByString(servicesetup, "{\"Company\": \"eastchina\"}")
 }
 
 func MapToJson(param map[string]string) string {

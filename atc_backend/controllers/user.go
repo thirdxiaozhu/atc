@@ -81,11 +81,10 @@ func (u *UserController) Login() {
 func (u *UserController) Signup() {
 	logger := logs.GetLogger()
 	logger.Println(u.GetString("userid"), u.GetString("password"), u.GetString("company"))
-	company, _ := strconv.Atoi(u.GetString("company"))
 	user := models.User{
 		Userid:   u.GetString("userid"),
 		Password: u.GetString("password"),
-		Company:  company,
+		Company:  u.GetString("company"),
 	}
 	var res JsonResponse
 	result := models.Signup(&user)

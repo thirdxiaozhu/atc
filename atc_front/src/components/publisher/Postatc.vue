@@ -23,8 +23,9 @@ export default {
         return {
             form: {
                 userid: this.$store.state.userid,
-                msgtype: 1,
+                msgtype: "ADS-B",
                 content: '',
+                timestamp: '',
             },
             fullscreenLoading: false,
             //rules: {
@@ -40,10 +41,10 @@ export default {
             //    ],
             //},
             options: [{
-                value: '1',
+                value: 'ADS-B',
                 label: 'ADS-B'
             }, {
-                value: '2',
+                value: 'Acars',
                 label: 'Acars'
             }],
             userid: '',
@@ -56,18 +57,19 @@ export default {
         //点击保存之后
         onSave() {
             this.fullscreenLoading = true;
+            this.form.timestamp = new Date().getTime()
+            console.log(this.form)
             postAtc(this.form).then(res => {
                 console.log(res);
                 this.fullscreenLoading = false;
 
-                if (res.data.code == "1000"){
+                if (res.data.code == "1000") {
                     this.$notify({
                         title: '成功',
                         message: '上传成功',
                         type: 'success'
                     });
                 }
-
             })
         },
         typeChange() {

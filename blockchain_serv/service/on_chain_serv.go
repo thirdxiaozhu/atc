@@ -47,8 +47,8 @@ func (t *ServiceSetup) FindAtcInfoByID(entityID string) ([]byte, error) {
 	return respone.Payload, nil
 }
 
-func (t *ServiceSetup) FindAtcByPublisher(qs string) ([]byte, error) {
-	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "queryAtcByPublisher", Args: [][]byte{[]byte(qs)}}
+func (t *ServiceSetup) FindAtcByQueryString(qs string) ([]byte, error) {
+	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "queryAtcByQueryString", Args: [][]byte{[]byte(qs)}}
 	respone, err := t.ChannelClient.Query(req)
 	if err != nil {
 		return []byte{0x00}, err

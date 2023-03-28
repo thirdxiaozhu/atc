@@ -1,260 +1,209 @@
 <template>
-  <el-container>
-    <el-header style="text-align: right; font-size: 12px">
-      <el-dropdown>
-        <i class="el-icon-setting" style="margin-right: 15px"></i>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>查看</el-dropdown-item>
-          <el-dropdown-item>新增</el-dropdown-item>
-          <el-dropdown-item>删除</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+	<el-container>
+		<el-header style="text-align: right; font-size: 12px">
+			<el-select v-model="company" multiple collapse-tags style="margin-right: 50px;" placeholder="请选择发布方" @change="changeCompanyOption">
+				<el-option v-for="item in company_options" :key="item.value" :label="item.label" :value="item.value">
+				</el-option>
+			</el-select>
+			<el-select v-model="publisher" multiple collapse-tags style="margin-right: 50px;" placeholder="请选择发布者">
+				<el-option v-for="item in publisher_options" :key="item.value" :label="item.label" :value="item.value">
+				</el-option>
+			</el-select>
 
-      <el-date-picker
-      v-model="value2"
-      type="datetimerange"
-      :picker-options="pickerOptions"
-      range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期"
-      align="right"
-      >
-    </el-date-picker>
-            <el-button type="primary" @click="onSave" v-loading.fullscreen.lock="fullscreenLoading">发送</el-button>
-    </el-header>
+			<el-date-picker v-model="value2" type="datetimerange" :picker-options="pickerOptions" range-separator="至"
+				start-placeholder="开始日期" end-placeholder="结束日期" align="right" @change="saveTimeSpan"
+				style="margin-right: 50px;">
+			</el-date-picker>
 
-    <el-main>
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="商品名称">
-                <span>{{ props.row.name }}</span>
-              </el-form-item>
-              <el-form-item label="所属店铺">
-                <span>{{ props.row.shop }}</span>
-              </el-form-item>
-              <el-form-item label="商品 ID">
-                <span>{{ props.row.id }}</span>
-              </el-form-item>
-              <el-form-item label="店铺 ID">
-                <span>{{ props.row.shopId }}</span>
-              </el-form-item>
-              <el-form-item label="商品分类">
-                <span>{{ props.row.category }}</span>
-              </el-form-item>
-              <el-form-item label="店铺地址">
-                <span>{{ props.row.address }}</span>
-              </el-form-item>
-              <el-form-item label="商品描述">
-                <span>{{ props.row.desc }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <el-table-column label="商品 ID" prop="id">
-        </el-table-column>
-        <el-table-column label="商品名称" prop="name">
-        </el-table-column>
-        <el-table-column label="描述" prop="desc">
-        </el-table-column>
-      </el-table>
-    </el-main>
-  </el-container>
+			<el-button type="primary" @click="onSave" style="margin-right: 50px;">查询</el-button>
+		</el-header>
+
+		<el-main>
+			<el-table :data="tableData" style="width: 100%">
+				<el-table-column type="expand">
+					<template slot-scope="props">
+						<el-form label-position="left" inline class="demo-table-expand">
+							<el-form-item label="发布时间">
+								<span>{{ props.row.Atc.Time }}</span>
+							</el-form-item>
+							<el-form-item label="发布ID">
+								<span>{{ props.row.Atc.ID }}</span>
+							</el-form-item>
+							<el-form-item label="发布方">
+								<span>{{ props.row.Atc.Company }}</span>
+							</el-form-item>
+							<el-form-item label="发布者">
+								<span>{{ props.row.Atc.Publisher }}</span>
+							</el-form-item>
+							<el-form-item label="签名值">
+								<span>{{ props.row.Atc.Signature }}</span>
+							</el-form-item>
+							<el-form-item label="IPFS地址">
+								<span>{{ props.row.Atc.Address }}</span>
+							</el-form-item>
+							<el-form-item label="报文类型">
+								<span>{{ props.row.Atc.Type }}</span>
+							</el-form-item>
+							<el-form-item label="报文内容">
+								<span>{{ props.row.Content }}</span>
+							</el-form-item>
+						</el-form>
+					</template>
+				</el-table-column>
+				<el-table-column label="发布时间" prop="Atc.Time" :filters="filtertags" :filter-method="filterTag"
+					filter-placement="bottom-end">
+				</el-table-column>
+				<el-table-column label="发布方" prop="Atc.Company">
+				</el-table-column>
+				<el-table-column label="发布者" prop="Atc.Publisher">
+				</el-table-column>
+				<el-table-column label="报文类型" prop="Atc.Type">
+				</el-table-column>
+				<el-table-column label="报文内容" prop="Content">
+				</el-table-column>
+			</el-table>
+		</el-main>
+	</el-container>
 </template>
   
 <style>
 .demo-table-expand {
-  font-size: 0;
+	font-size: 0;
 }
 
 .demo-table-expand label {
-  width: 90px;
-  color: #99a9bf;
+	width: 90px;
+	color: #99a9bf;
 }
 
 .demo-table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 50%;
+	margin-right: 0;
+	margin-bottom: 0;
+	width: 50%;
 }
 
 .el-header {
-  background-color: #FFF;
-  color: #333;
-  line-height: 60px;
-  padding: 0px;
+	background-color: #FFF;
+	color: #333;
+	line-height: 60px;
+	padding: 0px;
 }
 
 
-.el-main{
-  padding: 0px;
+.el-main {
+	padding: 0px;
 }
-
 </style>
   
 <script>
+import { getAtc, getCompanyOptions, getPublisherOptions } from '../../api/axios'
 export default {
-  data() {
-    return {
-      tableData: [{
-        id: '12987122',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987123',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987125',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987126',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      },{
-        id: '12987122',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987123',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987125',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987126',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      },{
-        id: '12987122',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987123',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987125',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987126',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      },{
-        id: '12987122',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987123',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987125',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }, {
-        id: '12987126',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
-      }],
-      pickerOptions: {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
-        },
-        value2: ''
-    }
-  }
+	data() {
+		return {
+			userid: "",
+			form: {
+				userid: this.$store.state.userid,
+				publisher: "",
+				company: "",
+				starttime: "",
+				endtime: "",
+			},
+			tableData: [],
+			pickerOptions: {
+				shortcuts: [{
+					text: '最近一周',
+					onClick(picker) {
+						this.endtime = new Date();
+						this.starttime = new Date();
+						this.starttime.setTime(this.starttime.getTime() - 3600 * 1000 * 24 * 7);
+						picker.$emit('pick', [this.starttime, this.endtime]);
+					}
+				}, {
+					text: '最近一个月',
+					onClick(picker) {
+						const end = new Date();
+						const start = new Date();
+						start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+						picker.$emit('pick', [start, end]);
+					}
+				}, {
+					text: '最近三个月',
+					onClick(picker) {
+						const end = new Date();
+						const start = new Date();
+						start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+						picker.$emit('pick', [start, end]);
+					}
+				}]
+			},
+			value2: "",
+			filtertags: [{ text: '12987122', value: '12987122' }, { text: '12987133', value: '12987133' }],
+			publisher_options: [],
+			publisher: [],
+			company_options: [],
+			company: [],
+		}
+	},
+	mounted: function () {
+		this.userid = this.$store.state.userid
+		//this.form.publisher = this.userid
+		this.getCompanyOptions()
+		this.getAllAtc()
+	},
+	methods: {
+		filterTag(value, row) {
+			return row.id === value;
+		},
+
+		getAllAtc() {
+			console.log(this.form)
+			this.form.company = this.company.toString()
+			this.form.publisher = this.publisher.toString()
+			getAtc(this.form).then(res => {
+				var len = res.data.data.length
+				for (var i = 0; i < len; i++) {
+					var msg_date = new Date().setTime(res.data.data[i].Atc.Time)
+					res.data.data[i].Atc.Time = this.getdate(msg_date)
+				}
+				this.tableData = res.data.data
+			})
+		},
+
+		onSave() {
+			console.log(this.value2)
+			this.getAllAtc()
+		},
+		saveTimeSpan() {
+			this.form.starttime = this.value2[0].getTime()
+			this.form.endtime = this.value2[1].getTime()
+		},
+
+		getdate(timeStamp) {
+			if (timeStamp) {
+				var now = new Date(timeStamp);
+			} else {
+				var now = new Date();
+			}
+			var Y = now.getFullYear();
+			var M = now.getMonth() + 1;
+			var D = now.getDate();
+			var m = M < 10 ? "0" + M : M;
+			var d = D < 10 ? "0" + D : D;
+			return Y + "-" + m + "-" + d + " " + now.toTimeString().substr(0, 8);
+		},
+
+		getCompanyOptions(){
+			getCompanyOptions().then(res =>{
+				this.company_options = res.data.data
+			})
+		},
+
+		changeCompanyOption(){
+			this.form.publisher = []
+			getPublisherOptions({"company":this.company.toString()}).then(res =>{
+				this.publisher_options = res.data.data
+			})
+		}
+	}
 }
 </script>

@@ -21,7 +21,14 @@ func init() {
 				&controllers.PublisherController{},
 				"post:PostAtc",
 			),
+			beego.NSRouter(
+				"/getatc",
+				&controllers.PublisherController{},
+				"get:GetAtcs",
+			),
 		),
+
+		beego.NSNamespace("/sundries"),
 
 		beego.NSNamespace("/user",
 			//beego.NSInclude(
@@ -54,6 +61,16 @@ func init() {
 				"/company",
 				&controllers.UtilController{},
 				"get:GetCompanies",
+			),
+			beego.NSRouter(
+				"/getcheckcompanies",
+				&controllers.UtilController{},
+				"get:GetCheckCompanies",
+			),
+			beego.NSRouter(
+				"/getcheckpublishers",
+				&controllers.UtilController{},
+				"get:GetCheckPublishers",
 			),
 		),
 	)

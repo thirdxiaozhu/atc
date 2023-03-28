@@ -104,16 +104,27 @@ func (this *DBHandle) QueryByPK(mode interface{}) {
 // @Description query by field
 // @Param mode: must be a pointer
 func (this *DBHandle) QueryAllByField(mode interface{}, table string, field string,
-	value interface{}) {
+	value interface{}) error {
 	_, err := this.orm.QueryTable(table).Filter(field, value).All(mode)
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
+	return nil
 }
 
 func (this *DBHandle) QueryOneByField(mode interface{}, table string, field string,
 	value interface{}) error {
 	err := this.orm.QueryTable(table).Filter(field, value).One(mode)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (this *DBHandle) QueryAll(mode interface{}, table string) error {
+	_, err := this.orm.QueryTable(table).All(mode)
 	if err != nil {
 		fmt.Println(err)
 		return err

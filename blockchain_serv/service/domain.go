@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"sdk"
@@ -24,6 +25,12 @@ type Atc struct {
 	Signature string `json:"Signature"`
 
 	Historys []HistoryItem // 当前edu的历史记录
+}
+
+type ReturnAtc struct {
+	Atc     Atc
+	IsValid bool   `json:"IsValid"`
+	Content string `json:"Content"`
 }
 
 type HistoryItem struct {
@@ -159,4 +166,21 @@ func Save(servicesetup *ServiceSetup, atc Atc) (string, error) {
 	}
 	logger.Println("信息发布成功, 交易编号为: " + msg)
 	return msg, nil
+}
+
+func QueryByString(servicesetup *ServiceSetup, querystr string) *[]Atc {
+	result, err := servicesetup.FindAtcByQueryString(querystr)
+	fmt.Println(result)
+
+	var atcs []Atc
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	} else {
+		//var atc service.Atc
+		json.Unmarshal(result, &atcs)
+		fmt.Println("根据身份证号码查询信息成功：")
+		fmt.Println(atcs)
+		return &atcs
+	}
 }

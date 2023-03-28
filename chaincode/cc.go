@@ -43,8 +43,8 @@ func (t *AtcChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return t.addAtc(stub, args) // 添加信息
 	} else if fun == "queryAtcInfoByID" {
 		return t.queryAtcInfoByID(stub, args) // 根据证书编号及姓名查询信息
-	} else if fun == "queryAtcByPublisher" {
-		return t.queryAtcByPublisher(stub, args) // 根据证书编号及姓名查询信息
+	} else if fun == "queryAtcByQueryString" {
+		return t.queryAtcByQueryString(stub, args) // 根据证书编号及姓名查询信息
 	}
 	return shim.Error("Wrong")
 }
@@ -144,7 +144,7 @@ func (t *AtcChaincode) queryAtcInfoByID(stub shim.ChaincodeStubInterface, args [
 
 // 根据证书编号及姓名查询信息
 // args: CertNo, name
-func (t *AtcChaincode) queryAtcByPublisher(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (t *AtcChaincode) queryAtcByQueryString(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
 	if len(args) != 1 {
 		return shim.Error("给定的参数个数不符合要求")

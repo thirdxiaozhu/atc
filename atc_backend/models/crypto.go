@@ -35,7 +35,7 @@ func GetSignature(sourceString string, privateKeyFile string) string {
 	return base64.StdEncoding.EncodeToString(sign_bytes)
 }
 
-func VerifySignature(sign_string string, sourceData []byte, certPath string) bool {
+func VerifySignature(sign_string string, sourceData string, certPath string) bool {
 
 	decoded, _ := base64.StdEncoding.DecodeString(sign_string)
 
@@ -44,7 +44,7 @@ func VerifySignature(sign_string string, sourceData []byte, certPath string) boo
 		fmt.Println(err)
 		return false
 	}
-	hashText := sha1.Sum(sourceData)
+	hashText := sha1.Sum([]byte(sourceData))
 	res := ecdsa.VerifyASN1(publicKey, hashText[:], decoded)
 	return res
 }

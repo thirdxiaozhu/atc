@@ -59,3 +59,27 @@ export function postAtc(param){
         params: param
     })
 }
+
+export function getAtc(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/publisher/getatc",
+        params: param
+    })
+}
+
+export function getCompanyOptions(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/util/getcheckcompanies",
+        params:param
+    })
+}
+
+export function getPublisherOptions(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/util/getcheckpublishers",
+        params:param
+    })
+}
