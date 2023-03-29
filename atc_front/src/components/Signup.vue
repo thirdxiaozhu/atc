@@ -45,7 +45,6 @@ export default {
                     lazy: true,
                     lazyLoad(node, resolve) {
                         const level = node.level;
-                        console.log(node.level)
                         //请求参数
                         const requestData = {};
                         if (level === 0) {  
@@ -63,7 +62,6 @@ export default {
                             requestData.role = node.value;
                             //省市区接口
                             getCompanies(requestData).then(res => {
-                                console.log(res)
                                 resolve(res.data.data)
                             })
                         }

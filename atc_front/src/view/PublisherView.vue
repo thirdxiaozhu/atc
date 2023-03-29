@@ -15,7 +15,7 @@
     <el-container>
       <el-header style="border: 1px"><Vheader></Vheader></el-header>
       <el-container>
-        <el-aside width="200px" style="height: 100vh;"><VSidebar></VSidebar></el-aside>
+        <el-aside width="250px" style="height: 100vh;"><VSidebar></VSidebar></el-aside>
         <el-container>
           <el-main><router-view></router-view></el-main>
         </el-container>

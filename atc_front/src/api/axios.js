@@ -83,3 +83,21 @@ export function getPublisherOptions(param){
         params:param
     })
 }
+
+
+export function getCertificate(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/util/getcert",
+        params:param
+    })
+}
+
+
+export function getPrivateKey(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/util/getpriv",
+        params:param
+    })
+}

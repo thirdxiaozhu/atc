@@ -95,3 +95,26 @@ func (u *UtilController) GetCheckPublishers() {
 	}
 	u.ServeJSON()
 }
+
+func (u *UtilController) GetCertificate() {
+	user := u.GetString("user")
+	cert_p := models.GetCert(user)
+
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: *cert_p,
+	}
+	u.ServeJSON()
+}
+
+func (u *UtilController) GetPrivateKey() {
+	user := u.GetString("user")
+
+	priv_p := models.GetPrivateKey(user)
+
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: string(*priv_p),
+	}
+	u.ServeJSON()
+}

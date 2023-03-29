@@ -52,8 +52,8 @@ export default {
                 console.log(res)
                 this.json = res.data.data
                 if (res.data.code === 1000){
-                    that.$store.commit('saveToken',{token: this.json.UUID,userid: this.json.Userid,
-                                        usercompany: this.json.Company})
+                    that.$store.commit('saveToken',{token: this.json.user.UUID,userid: this.json.user.Userid,
+                                        usercompany: this.json.user.Company, cncompany: this.json.cncompany})
                     console.log(that.$store)
                     this.$router.push({ path: '/publisher' });
                 }else{

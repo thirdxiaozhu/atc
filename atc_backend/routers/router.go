@@ -72,6 +72,16 @@ func init() {
 				&controllers.UtilController{},
 				"get:GetCheckPublishers",
 			),
+			beego.NSRouter(
+				"/getcert",
+				&controllers.UtilController{},
+				"get:GetCertificate",
+			),
+			beego.NSRouter(
+				"/getpriv",
+				&controllers.UtilController{},
+				"get:GetPrivateKey",
+			),
 		),
 	)
 	beego.AddNamespace(ns)

@@ -14,6 +14,11 @@ type User struct {
 	UUID     string `orm:"column(uuid);size(64)"`
 }
 
+type Login_Return struct {
+	User      User   `json:"user"`
+	CNcompany string `json:"cncompany"`
+}
+
 var (
 	cryptpath_map  map[string]string
 	configpath_map map[string]string
@@ -35,7 +40,7 @@ func init() {
 	setup_map = make(map[string]*service.ServiceSetup)
 }
 
-func Login(userid, password string) *User {
+func Login(userid, password string) *Login_Return {
 	//users := []User{}
 	user := User{}
 	err := DBH.QueryOneByField(&user, "user", "name", userid)
@@ -55,7 +60,18 @@ func Login(userid, password string) *User {
 		user.UUID = u.String()
 		DBH.Update(&user)
 
-		return &user
+		company := Company{}
+		err := DBH.QueryOneByField(&company, "company", "name", user.Company)
+		if err != nil {
+			return nil
+		}
+
+		login_ret := Login_Return{
+			User:      user,
+			CNcompany: company.CNname,
+		}
+
+		return &login_ret
 	}
 	return nil
 }

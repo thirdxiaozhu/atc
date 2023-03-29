@@ -70,10 +70,10 @@ func (u *UserController) Login() {
 	//	Password: u.GetString("userid"),
 	//}
 	logger.Println(u.GetString("userid"))
-	user := models.Login(u.GetString("userid"), u.GetString("password"))
+	log_ret := models.Login(u.GetString("userid"), u.GetString("password"))
 	u.Data["json"] = JsonResponse{
 		Code: 1000,
-		Data: user,
+		Data: *log_ret,
 	}
 	u.ServeJSON()
 }
