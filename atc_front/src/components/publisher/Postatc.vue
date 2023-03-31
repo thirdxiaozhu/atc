@@ -58,9 +58,7 @@ export default {
         onSave() {
             this.fullscreenLoading = true;
             this.form.timestamp = new Date().getTime()
-            console.log(this.form)
             postAtc(this.form).then(res => {
-                console.log(res);
                 this.fullscreenLoading = false;
 
                 if (res.data.code == "1000") {

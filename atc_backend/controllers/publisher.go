@@ -35,11 +35,32 @@ func (u *PublisherController) PostAtc() {
 func (u *PublisherController) GetAtcs() {
 	paralist := [4]string{u.GetString("publisher"), u.GetString("company"), u.GetString("starttime"), u.GetString("endtime")}
 
-	atc_rets := models.GetAtcs(u.GetString("userid"), paralist[:])
+	atcs := models.GetAtcs(u.GetString("userid"), paralist[:])
 
 	u.Data["json"] = JsonResponse{
 		Code: 1000,
-		Data: &atc_rets,
+		Data: &atcs,
+	}
+	u.ServeJSON()
+}
+
+func (u *PublisherController) PostEdit() {
+	paralist := [4]string{u.GetString("userid"), u.GetString("content"), u.GetString("ID"), u.GetString("timestamp")}
+
+	transid := models.EditAtc(paralist[:])
+
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: transid,
+	}
+	u.ServeJSON()
+}
+
+func (u *PublisherController) PostDelete() {
+	transid := models.DeleteAtc(u.GetString("userid"), u.GetString("ID"))
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: transid,
 	}
 	u.ServeJSON()
 }

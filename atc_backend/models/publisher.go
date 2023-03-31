@@ -30,14 +30,13 @@ func init() {
 }
 
 func PostAtc(userid, msgtype, content, timestamp string) (string, error) {
-	logger.Println(userid, msgtype, content)
 	user := User{}
 	DBH.QueryOneByField(&user, "user", "name", userid)
 
 	sign := GetSignature(content, cryptpath_map[user.Company]+"client.key")
+	address, err := UploadIPFS(content)
 	u, _ := uuid.NewRandom()
 
-	address, err := UploadIPFS(content)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -61,7 +60,7 @@ func PostAtc(userid, msgtype, content, timestamp string) (string, error) {
 	return transid, nil
 }
 
-func GetAtcs(userid string, paralist []string) *[]service.ReturnAtc {
+func GetAtcs(userid string, paralist []string) *[]service.Atc {
 	publisher_names := strings.Split(paralist[0], ",")
 	company_names := strings.Split(paralist[1], ",")
 
@@ -110,7 +109,56 @@ func GetAtcs(userid string, paralist []string) *[]service.ReturnAtc {
 		atcs = append(atcs, *atcs_p...)
 	}
 
-	return VerifyandGetContent(&atcs)
+	for index, _ := range atcs {
+		atc := atcs[index]
+		atc.Content, atc.IsValid = VerifyandGetContent(atc)
+
+		for index, _ := range atc.Historys {
+			atc_h := atc.Historys[index].Atc
+			atc_h.Content, atc_h.IsValid = VerifyandGetContent(atc_h)
+			atc.Historys[index].Atc = atc_h
+		}
+		atcs[index] = atc
+	}
+
+	return &atcs
+}
+
+func EditAtc(paralist []string) string {
+
+	user := User{}
+	DBH.QueryOneByField(&user, "user", "name", paralist[0])
+
+	sign := GetSignature(paralist[1], cryptpath_map[user.Company]+"client.key")
+	address, err := UploadIPFS(paralist[1])
+	if err != nil {
+		logger.Println(err)
+		return ""
+	}
+	atc := service.Atc{
+		ID:        paralist[2],
+		Time:      paralist[3],
+		Address:   address,
+		Signature: sign,
+	}
+	transid, err := service.Modify(setup_map[paralist[0]], atc)
+	if err != nil {
+		logger.Println(err)
+		return ""
+	}
+
+	return transid
+}
+
+func DeleteAtc(userid, atcid string) string {
+	transid, err := service.Delete(setup_map[userid], atcid)
+	if err != nil {
+		logger.Println(err)
+		return ""
+	}
+
+	return transid
+
 }
 
 func getQueryString(cs CheckStruct) string {
@@ -120,12 +168,12 @@ func getQueryString(cs CheckStruct) string {
 
 	if cs.Publisher != "" {
 		parastr += judgeComma(count)
-		parastr += fmt.Sprintf("\"Publisher\":\"%s\"", cs.Publisher)
+		parastr += fmt.Sprintf("\"Publisher\": \"%s\"", cs.Publisher)
 		count++
 	}
 	if cs.Company != "" {
 		parastr += judgeComma(count)
-		parastr += fmt.Sprintf("\"Company\":\"%s\"", cs.Company)
+		parastr += fmt.Sprintf("\"Company\": \"%s\"", cs.Company)
 		count++
 	}
 
@@ -141,18 +189,11 @@ func judgeComma(count int) string {
 	}
 }
 
-func VerifyandGetContent(atcs_p *[]service.Atc) *[]service.ReturnAtc {
-	atcs := *atcs_p
-	var atc_rets []service.ReturnAtc
-	for _, value := range atcs {
-		atc_ret := service.ReturnAtc{}
-		atc_ret.Atc = value
-		atc_ret.Content = CatIPFS(value.Address)
+func VerifyandGetContent(atc service.Atc) (string, bool) {
 
-		atc_ret.IsValid = VerifySignature(value.Signature, atc_ret.Content, cryptpath_map[value.Company]+"client.crt")
+	content := CatIPFS(atc.Address)
 
-		atc_rets = append(atc_rets, atc_ret)
-	}
+	isValid := VerifySignature(atc.Signature, atc.Content, cryptpath_map[atc.Company]+"client.crt")
 
-	return &atc_rets
+	return content, isValid
 }

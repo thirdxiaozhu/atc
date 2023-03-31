@@ -23,19 +23,21 @@ type Atc struct {
 	Type      string `json:"Type"`
 	Address   string `json:"Address"`
 	Signature string `json:"Signature"`
+	Content   string `json:"Content"`
+	IsValid   bool   `json:"IsValid"`
 
 	Historys []HistoryItem // 当前edu的历史记录
-}
-
-type ReturnAtc struct {
-	Atc     Atc
-	IsValid bool   `json:"IsValid"`
-	Content string `json:"Content"`
 }
 
 type HistoryItem struct {
 	TxId string
 	Atc  Atc
+}
+
+type ReturnHistoryItem struct {
+	Time    string `json:"Time"`
+	Address string `json:"Address"`
+	Content string `json:"Content"`
 }
 
 type ServiceSetup struct {
@@ -170,7 +172,6 @@ func Save(servicesetup *ServiceSetup, atc Atc) (string, error) {
 
 func QueryByString(servicesetup *ServiceSetup, querystr string) *[]Atc {
 	result, err := servicesetup.FindAtcByQueryString(querystr)
-	fmt.Println(result)
 
 	var atcs []Atc
 	if err != nil {
@@ -179,8 +180,28 @@ func QueryByString(servicesetup *ServiceSetup, querystr string) *[]Atc {
 	} else {
 		//var atc service.Atc
 		json.Unmarshal(result, &atcs)
-		fmt.Println("根据身份证号码查询信息成功：")
-		fmt.Println(atcs)
 		return &atcs
 	}
+}
+
+func Modify(servicesetup *ServiceSetup, atc Atc) (string, error) {
+	transid, err := servicesetup.ModifyAtc(atc)
+	if err != nil {
+		logger.Println(err.Error())
+		return "", err
+	}
+	logger.Println("信息修改成功, 交易编号为: " + transid)
+
+	return transid, nil
+}
+
+func Delete(servicesetup *ServiceSetup, ID string) (string, error) {
+	transid, err := servicesetup.DeleteAtc(ID)
+	if err != nil {
+		logger.Println(err.Error())
+		return "", err
+	}
+	logger.Println("信息删除成功, 交易编号为: " + transid)
+
+	return transid, nil
 }

@@ -101,3 +101,19 @@ export function getPrivateKey(param){
         params:param
     })
 }
+
+export function postEdit(param){
+    return axios.request({
+        method: "POST",
+        url: "/api/publisher/postedit",
+        params:param
+    })
+}
+
+export function postDelete(param){
+    return axios.request({
+        method: "POST",
+        url: "/api/publisher/postdelete",
+        params:param
+    })
+}

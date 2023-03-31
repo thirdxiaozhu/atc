@@ -26,6 +26,16 @@ func init() {
 				&controllers.PublisherController{},
 				"get:GetAtcs",
 			),
+			beego.NSRouter(
+				"/postedit",
+				&controllers.PublisherController{},
+				"post:PostEdit",
+			),
+			beego.NSRouter(
+				"/postdelete",
+				&controllers.PublisherController{},
+				"post:PostDelete",
+			),
 		),
 
 		beego.NSNamespace("/sundries"),

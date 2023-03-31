@@ -8,8 +8,26 @@ import (
 	"service"
 )
 
-func query(servicesetup *service.ServiceSetup) {
-	result, err := servicesetup.FindAtcInfoByID("b44518be-56de-4495-9a0b-8754d178bf07 1679925069945")
+func del(servicesetup *service.ServiceSetup, ID string) {
+	transid, err := servicesetup.DelAtc(ID)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("信息发布成功, 交易编号为: " + transid)
+	}
+}
+
+func modify(servicesetup *service.ServiceSetup, atc service.Atc) {
+	transid, err := servicesetup.ModifyAtc(atc)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("信息发布成功, 交易编号为: " + transid)
+	}
+}
+
+func query(servicesetup *service.ServiceSetup, id string) {
+	result, err := servicesetup.FindAtcInfoByID(id)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -18,14 +36,13 @@ func query(servicesetup *service.ServiceSetup) {
 		fmt.Println("根据身份证号码查询信息成功：")
 		fmt.Println(atc)
 	}
-
 }
 
 func queryByString(servicesetup *service.ServiceSetup, querystr string) {
 	result, err := servicesetup.FindAtcByQueryString(querystr)
-	fmt.Println(result)
 
 	var atcs []service.Atc
+
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -33,6 +50,7 @@ func queryByString(servicesetup *service.ServiceSetup, querystr string) {
 		json.Unmarshal(result, &atcs)
 		fmt.Println("根据身份证号码查询信息成功：")
 		fmt.Println(atcs)
+		fmt.Println(atcs[0].Content, atcs[0].Address, atcs[0].IsValid)
 	}
 }
 
@@ -110,25 +128,26 @@ func main() {
 	}
 
 	//atc := service.Atc{
-	//	ID:      "1",
-	//	Time:    "111",
-	//	User:    "DSDDS",
-	//	Company: "AirChina",
-	//	Type:    "ACARS",
-	//	Info:    "ABCDEFG",
+	//	ID:        "3e340f55-3864-4ac7-8a40-1609d5b30aae",
+	//	Time:      "1678654",
+	//	Address:   "QmeiiXbdqNRKCeHkTYVTKVfrRsETJ6dksb2t28mPh91sSu",
+	//	Signature: "MEQCIHdvSOZWYL6o5cwfRX5VNp8NcXRI6SoCTl8bj5f/TWZ+AiAegMJOh1/L5g/DYSvLKCxhEF9ebXgGW7o0d96pGb34+A==",
 	//}
 
 	//save(servicesetup, atc)
-	//query(servicesetup)
+	//modify(servicesetup, atc)
+	query(servicesetup, "55a7f921-3dfd-41f0-b6c0-8cad448d93e4")
 
-	pb_map := map[string]string{"Publisher": "ec", "Company": "eastchina"}
-	fmt.Println(pb_map)
-	fmt.Println(MapToJson(pb_map))
-	//map_str := MapToJson(pb_map)
+	//pb_map := map[string]string{"Publisher": "ec", "Company": "eastchina"}
+	//fmt.Println(pb_map)
+	//fmt.Println(MapToJson(pb_map))
+	////map_str := MapToJson(pb_map)
 
-	//queryByString(servicesetup, map_str)
+	////queryByString(servicesetup, map_str)
+	////queryByString(servicesetup, "{\"Publisher\": \"ec\"}")
+	//queryByString(servicesetup, "{\"Company\": \"eastchina\"}")
 	//queryByString(servicesetup, "{\"Publisher\": \"ec\"}")
-	queryByString(servicesetup, "{\"Company\": \"eastchina\"}")
+	//del(servicesetup, "55a7f921-3dfd-41f0-b6c0-8cad448d93e4")
 }
 
 func MapToJson(param map[string]string) string {

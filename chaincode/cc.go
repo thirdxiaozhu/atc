@@ -45,7 +45,12 @@ func (t *AtcChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return t.queryAtcInfoByID(stub, args) // 根据证书编号及姓名查询信息
 	} else if fun == "queryAtcByQueryString" {
 		return t.queryAtcByQueryString(stub, args) // 根据证书编号及姓名查询信息
+	} else if fun == "updateAtc" {
+		return t.updateAtc(stub, args) // 根据证书编号及姓名查询信息
+	} else if fun == "delAtc" {
+		return t.delAtc(stub, args) // 根据证书编号及姓名查询信息
 	}
+
 	return shim.Error("Wrong")
 }
 
@@ -101,20 +106,60 @@ func (t *AtcChaincode) queryAtcInfoByID(stub shim.ChaincodeStubInterface, args [
 		return shim.Error("反序列化edu信息失败")
 	}
 
-	// 获取历史变更数据
-	iterator, err := stub.GetHistoryForKey(atc.ID)
+	// 迭代处理
+	//var historys []HistoryItem
+	//var hisAtc Atc
+	//for iterator.HasNext() {
+	//	hisData, err := iterator.Next()
+	//	if err != nil {
+	//		return shim.Error("获取edu的历史变更数据失败")
+	//	}
+
+	//	var historyItem HistoryItem
+	//	historyItem.TxId = hisData.TxId
+	//	json.Unmarshal(hisData.Value, &hisAtc)
+
+	//	if hisData.Value == nil {
+	//		var empty Atc
+	//		historyItem.Atc = empty
+	//	} else {
+	//		historyItem.Atc = hisAtc
+	//	}
+
+	//	historys = append(historys, historyItem)
+
+	//}
+	items, err := getHistory(stub, atc.ID)
+
 	if err != nil {
-		return shim.Error("根据指定的身份证号码查询对应的历史变更数据失败")
+		return shim.Error("获取历史记录失败")
+	}
+
+	atc.Historys = *items
+
+	// 返回
+	result, err := json.Marshal(atc)
+	if err != nil {
+		return shim.Error("序列化edu信息时发生错误")
+	}
+	return shim.Success(result)
+}
+
+func getHistory(stub shim.ChaincodeStubInterface, atc_id string) (*[]HistoryItem, error) {
+
+	// 获取历史变更数据
+	iterator, err := stub.GetHistoryForKey(atc_id)
+	if err != nil {
+		return nil, err
 	}
 	defer iterator.Close()
 
-	// 迭代处理
 	var historys []HistoryItem
 	var hisAtc Atc
 	for iterator.HasNext() {
 		hisData, err := iterator.Next()
 		if err != nil {
-			return shim.Error("获取edu的历史变更数据失败")
+			return nil, err
 		}
 
 		var historyItem HistoryItem
@@ -129,17 +174,9 @@ func (t *AtcChaincode) queryAtcInfoByID(stub shim.ChaincodeStubInterface, args [
 		}
 
 		historys = append(historys, historyItem)
-
 	}
 
-	atc.Historys = historys
-
-	// 返回
-	result, err := json.Marshal(atc)
-	if err != nil {
-		return shim.Error("序列化edu信息时发生错误")
-	}
-	return shim.Success(result)
+	return &historys, nil
 }
 
 // 根据证书编号及姓名查询信息
@@ -189,6 +226,14 @@ func (t *AtcChaincode) queryAtcByQueryString(stub shim.ChaincodeStubInterface, a
 			fmt.Println(err.Error())
 			return shim.Error("data unmarshal failed: " + err.Error())
 		}
+
+		items, err := getHistory(stub, atc.ID)
+
+		if err != nil {
+			return shim.Error("获取历史记录失败")
+		}
+
+		atc.Historys = *items
 		atcs = append(atcs, atc)
 	}
 
@@ -246,6 +291,66 @@ func (t *AtcChaincode) queryAtcByQueryString(stub shim.ChaincodeStubInterface, a
 //	return buffer.Bytes(), nil
 //}
 
+func (t *AtcChaincode) updateAtc(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) != 2 {
+		return shim.Error("给定的参数个数不符合要求")
+	}
+
+	var atcinfo Atc
+	err := json.Unmarshal([]byte(args[0]), &atcinfo)
+	if err != nil {
+		return shim.Error("反序列化edu信息失败")
+	}
+
+	// 根据身份证号码查询信息
+	result, bl := GetAtcInfo(stub, atcinfo.ID)
+	if !bl {
+		return shim.Error("根据身份证号码查询信息时发生错误")
+	}
+
+	result.ID = atcinfo.ID
+	result.Time = atcinfo.Time
+	result.Address = atcinfo.Address
+	result.Signature = atcinfo.Signature
+
+	_, bl = PutAtc(stub, result)
+	if !bl {
+		return shim.Error("保存信息信息时发生错误")
+	}
+
+	err = stub.SetEvent(args[1], []byte{})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success([]byte("信息更新成功"))
+}
+
+func (t *AtcChaincode) delAtc(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) != 2 {
+		return shim.Error("给定的参数个数不符合要求")
+	}
+
+	/*var edu Education
+	result, bl := GetEduInfo(stub, info.EntityID)
+	err := json.Unmarshal(result, &edu)
+	if err != nil {
+		return shim.Error("反序列化信息时发生错误")
+	}*/
+
+	err := stub.DelState(args[0])
+	if err != nil {
+		return shim.Error("删除信息时发生错误")
+	}
+
+	err = stub.SetEvent(args[1], []byte{})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success([]byte("信息删除成功"))
+}
+
 func PutAtc(stub shim.ChaincodeStubInterface, atc Atc) ([]byte, bool) {
 
 	//edu.ObjectType = DOC_TYPE
@@ -270,6 +375,28 @@ func valOf(i ...interface{}) []reflect.Value {
 		rt = append(rt, reflect.ValueOf(i2))
 	}
 	return rt
+}
+
+func GetAtcInfo(stub shim.ChaincodeStubInterface, ID string) (Atc, bool) {
+	var atc Atc
+	// 根据身份证号码查询信息状态
+	b, err := stub.GetState(ID)
+	if err != nil {
+		return atc, false
+	}
+
+	if b == nil {
+		return atc, false
+	}
+
+	// 对查询到的状态进行反序列化
+	err = json.Unmarshal(b, &atc)
+	if err != nil {
+		return atc, false
+	}
+
+	// 返回结果
+	return atc, true
 }
 
 func main() {
