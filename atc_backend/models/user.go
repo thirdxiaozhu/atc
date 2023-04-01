@@ -15,8 +15,9 @@ type User struct {
 }
 
 type Login_Return struct {
-	User      User   `json:"user"`
-	CNcompany string `json:"cncompany"`
+	User    User    `json:"user"`
+	Company Company `json:"company"`
+	//CNcompany string  `json:"cncompany"`
 }
 
 var (
@@ -67,8 +68,8 @@ func Login(userid, password string) *Login_Return {
 		}
 
 		login_ret := Login_Return{
-			User:      user,
-			CNcompany: company.CNname,
+			User:    user,
+			Company: company,
 		}
 
 		return &login_ret

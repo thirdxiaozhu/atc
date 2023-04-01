@@ -53,9 +53,13 @@ export default {
                 this.json = res.data.data
                 if (res.data.code === 1000){
                     that.$store.commit('saveToken',{token: this.json.user.UUID,userid: this.json.user.Userid,
-                                        usercompany: this.json.user.Company, cncompany: this.json.cncompany})
+                                        usercompany: this.json.user.Company, cncompany: this.json.company.CNname})
                     console.log(that.$store)
-                    this.$router.push({ path: '/publisher' });
+                    if(this.json.company.Role === 0){
+                        this.$router.push({ path: '/publisher' });
+                    }else{
+                        this.$router.push({ path: '/acquirer' });
+                    }
                 }else{
                     that.msg = res.data.data
                 }

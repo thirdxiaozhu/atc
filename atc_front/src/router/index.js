@@ -13,6 +13,12 @@ import Checkatc from '@/components/publisher/Checkatc'
 import Certificate from '@/components/publisher/Certificate'
 import Prikey  from '@/components/publisher/Prikey'
 
+import AcquirerView from '@/view/AcquirerView'
+import A_Main from '@/components/acquirer/Main'
+import A_Checkatc from '@/components/acquirer/Checkatc'
+import A_Certificate from '@/components/acquirer/Certificate'
+import A_Prikey  from '@/components/acquirer/Prikey'
+
 Vue.use(Router)
 
 export default new Router({
@@ -83,6 +89,38 @@ export default new Router({
 					path: "prikey",
 					name: "Prikey",
 					component: Prikey,
+				}
+			]
+		},
+		{
+			path: '/acquirer',
+			name: 'Acquirer',
+			component: AcquirerView,
+			children: [
+				{
+					path: "/",
+					name: "A_Main",
+					component: A_Main,
+				},
+				{
+					path: "main",
+					name: "A_Main",
+					component: A_Main,
+				},
+				{
+					path: "checkatc",
+					name: "A_CheckAtc",
+					component: A_Checkatc,
+				},
+				{
+					path: "certificate",
+					name: "A_Certificate",
+					component: A_Certificate,
+				},
+				{
+					path: "prikey",
+					name: "A_Prikey",
+					component: A_Prikey,
 				}
 			]
 		}
