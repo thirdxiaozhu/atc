@@ -1,14 +1,22 @@
 <template>
 	<el-container>
 		<el-main>
-			<h3 align="left">数字证书</h3>
-			<el-input type="textarea" :rows="10" placeholder="公钥证书" v-model="certtext"
-				style="margin-top: 10px; width: 45%;">
-			</el-input>
-			<el-input type="textarea" :rows="10" placeholder="私钥" v-model="privtext"
-				style="margin-top: 10px; width: 45%; margin-left: 30px;">
-			</el-input>
+			<el-row>
+				<el-col :span="12">
+					<h3 align="left">数字证书</h3>
+					<el-input type="textarea" :rows="10" placeholder="公钥证书" v-model="certtext"
+						style="margin-top: 10px;">
+					</el-input>
+				</el-col>
+				<el-col :span="12">
+					<h3 align="left">私钥</h3>
+					<el-input type="textarea" :rows="10" placeholder="私钥" v-model="privtext"
+						style="margin-top: 10px;">
+					</el-input>
+				</el-col>
+			</el-row>
 			<el-divider></el-divider>
+			<!--
 			<h3 align="left">Issuer</h3>
 			<el-table :data="issueData" style="width: 50%;">
 				<el-table-column prop="key" label="对象">
@@ -16,6 +24,27 @@
 				<el-table-column prop="value" label="内容">
 				</el-table-column>
 			</el-table>
+-->
+			<el-row>
+				<el-col :span="12">
+					<h3 align="left">Issuer</h3>
+					<el-table :data="issueData" style="width: 50%;">
+						<el-table-column prop="key" label="对象">
+						</el-table-column>
+						<el-table-column prop="value" label="内容">
+						</el-table-column>
+					</el-table>
+				</el-col>
+				<el-col :span="12">
+					<h3 align="left">Algorithm</h3>
+					<el-table :data="algoData" style="width: 50%;">
+						<el-table-column prop="key" label="对象">
+						</el-table-column>
+						<el-table-column prop="value" label="内容">
+						</el-table-column>
+					</el-table>
+				</el-col>
+			</el-row>
 			<el-divider></el-divider>
 			<h3 align="left">公钥</h3>
 			<el-table :data="keyData" style="width: 100%;">
@@ -42,7 +71,7 @@ export default {
 		return {
 			userid: "",
 			certtext: "",
-			privtext:"",
+			privtext: "",
 			issueData: [{
 				key: 'C',
 				value: '-',
@@ -67,14 +96,21 @@ export default {
 				key: 'Y',
 				value: '-',
 				length: '',
-			}]
+			}],
+			algoData: [{
+				key: "签名算法",
+				value: '-',
+			}, {
+				key: "公钥算法",
+				value: '-',
+			}],
 		}
 	},
 	mounted() {
 		// this.$refs.tree.getNode(1).expanded = true
 		// this.$refs.tree.getNode(11).expanded = true
 		// this.$refs.tree.getNode(111).isLeaf = false
-        this.userid = this.$store.state.userid;
+		this.userid = this.$store.state.userid;
 		this.getCert()
 		this.getPriv()
 
@@ -94,9 +130,12 @@ export default {
 				this.keyData[0].length = this.cert_ret.xlength
 				this.keyData[1].value = this.cert_ret.y
 				this.keyData[1].length = this.cert_ret.ylength
+
+				this.algoData[0].value = this.cert_ret.algomap.signature_algorithm
+				this.algoData[1].value = this.cert_ret.algomap.publickey_algorithm
 			})
 		},
-		getPriv(){
+		getPriv() {
 			getPrivateKey({ "user": this.userid }).then(res => {
 				this.privtext = res.data.data
 			})

@@ -60,6 +60,14 @@ export function postAtc(param){
     })
 }
 
+export function postMultiAtc(param){
+    return axios.request({
+        method: "POST",
+        url: "/api/publisher/postmultiatc",
+        params: param
+    })
+}
+
 export function getAtc(param){
     return axios.request({
         method: "GET",
@@ -69,9 +77,11 @@ export function getAtc(param){
 }
 
 export function getCompanyOptions(param){
+    console.log(param)
     return axios.request({
         method: "GET",
-        url: "/api/util/getcheckcompanies",
+        //url: "/api/util/getcompanies",
+        url: "/api/util/company",
         params:param
     })
 }

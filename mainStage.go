@@ -58,7 +58,7 @@ func main() {
 		ChaincodeVersion: cc_version,
 	}
 
-	sdkentity, err := sdk.Setup("./config/config_eastchina.yaml", &info)
+	sdkentity, err := sdk.Setup("./config/config_test.yaml", &info)
 
 	if err != nil {
 		fmt.Println(">> Sdk set error", err)

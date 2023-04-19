@@ -1,8 +1,11 @@
 <template>
 	<el-container>
 		<el-aside width="200px">
+			<!-- 
 			<el-tree :data="treeData" :props="defaultProps" ref="tree" node-key="id" @node-click="handleNodeClick"
-				@node-expand="expandClick" style="margin-top: 1px;">
+				@node-expand="expandClick" style="margin-top: 1px;"> -->
+			<el-tree :data="treeData" :props="defaultProps" ref="tree" node-key="id" @node-click="handleNodeClick"
+				style="margin-top: 1px;">
 				<template #default="{ node, data }">
 					<span class="custom-tree-node">
 						<i v-if="data.loading" class="el-icon-loading"></i>
@@ -17,13 +20,26 @@
 				style="margin-top: 10px; width: 100%;">
 			</el-input>
 			<el-divider></el-divider>
-			<h3 align="left">Issuer</h3>
-			<el-table :data="issueData" style="width: 50%;">
-				<el-table-column prop="key" label="对象">
-				</el-table-column>
-				<el-table-column prop="value" label="内容">
-				</el-table-column>
-			</el-table>
+			<el-row>
+				<el-col :span="12">
+					<h3 align="left">Issuer</h3>
+					<el-table :data="issueData" style="width: 50%;">
+						<el-table-column prop="key" label="对象">
+						</el-table-column>
+						<el-table-column prop="value" label="内容">
+						</el-table-column>
+					</el-table>
+				</el-col>
+				<el-col  :span="12">
+					<h3 align="left">Algorithm</h3>
+					<el-table :data="algoData" style="width: 50%;">
+						<el-table-column prop="key" label="对象">
+						</el-table-column>
+						<el-table-column prop="value" label="内容">
+						</el-table-column>
+					</el-table>
+				</el-col>
+			</el-row>
 			<el-divider></el-divider>
 			<h3 align="left">公钥</h3>
 			<el-table :data="keyData" style="width: 100%;">
@@ -31,8 +47,8 @@
 				</el-table-column>
 				<el-table-column prop="value" label="值">
 					<template slot-scope="scope">
-						<el-tag :type="scope.row.key === 'X' ? 'warning' : 'success'"
-							disable-transitions>{{ scope.row.value }}</el-tag>
+						<el-tag :type="scope.row.key === 'X' ? 'warning' : 'success'" disable-transitions>{{ scope.row.value
+						}}</el-tag>
 					</template>
 				</el-table-column>
 				<el-table-column prop="length" label="长度">
@@ -76,6 +92,13 @@ export default {
 				key: 'ST',
 				value: '-',
 			}],
+			algoData:[{
+				key: "签名算法",
+				value: '-',
+			},{
+				key: "公钥算法",
+				value: '-',
+			}],
 			keyData: [{
 				key: 'X',
 				value: '-',
@@ -111,16 +134,16 @@ export default {
 		handleNodeClick(data) {
 			this.getData(data)
 		},
-		// 节点展开
-		expandClick(data) {
-			this.getData(data)
-		},
+		//// 节点展开
+		//expandClick(data) {
+		//	this.getData(data)
+		//},
 		getData(data) {
 			if (data.level === 0 && data.children.length < 1) {
 				// 开启loading
 				this.$set(data, 'loading', true)
 
-				getCompanyOptions().then(res => {
+				getCompanyOptions({ role: -1 }).then(res => {
 					for (var i = 0; i < res.data.data.length; i++) {
 						res.data.data[i].level = 1
 						res.data.data[i].children = []
@@ -153,6 +176,9 @@ export default {
 					this.keyData[0].length = this.cert_ret.xlength
 					this.keyData[1].value = this.cert_ret.y
 					this.keyData[1].length = this.cert_ret.ylength
+
+					this.algoData[0].value = this.cert_ret.algomap.signature_algorithm
+					this.algoData[1].value = this.cert_ret.algomap.publickey_algorithm
 				})
 			}
 		},

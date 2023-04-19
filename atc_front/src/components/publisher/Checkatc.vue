@@ -64,9 +64,10 @@
 				</el-table-column>
 				<el-table-column label="操作">
 					<template slot-scope="scope">
-						<el-button size="mini" @click="dialogFormVisible=true; current_row=scope.row "
+						<el-button size="mini" @click="dialogFormVisible = true; current_row = scope.row "
 							:disabled="scope.row.disabled">编辑</el-button>
 						<el-button size="mini" type="info" @click="handleHistory(scope.$index, scope.row)">历史</el-button>
+						<el-button size="mini" type="success" @click="handleDetail(scope.row)">详情</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -90,8 +91,63 @@
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="handleEdit()">确定</el-button>
-				<el-button  @click="dialogFormVisible = false">取消</el-button>
+				<el-button @click="dialogFormVisible = false">取消</el-button>
 				<el-button type="danger" @click="handleDelete()">删除</el-button>
+			</div>
+		</el-dialog>
+		<el-dialog title="ACARS详情" :visible.sync="dialogAcarsDetailVisible">
+			<el-form :model="acars_detail_form">
+				<el-row>
+					<el-col :span="12">
+						<el-form-item label="Mode">
+							<el-input v-model="acars_detail_form.mode" autocomplete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="Address">
+							<el-input v-model="acars_detail_form.address" autocomplete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row>
+					<el-col :span="12">
+						<el-form-item label="Label">
+							<el-input v-model="acars_detail_form.label" autocomplete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="ACK">
+							<el-input v-model="acars_detail_form.ack" autocomplete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row>
+					<el-col :span="12">
+						<el-form-item label="UDBI">
+							<el-input v-model="acars_detail_form.udbi" autocomplete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row>
+					<el-col :span="12">
+						<el-form-item label="Serial">
+							<el-input v-model="acars_detail_form.serial" autocomplete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="Flight Number">
+							<el-input v-model="acars_detail_form.flight" autocomplete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row>
+						<el-form-item label="Text">
+							<el-input v-model="acars_detail_form.text" autocomplete="off"></el-input>
+						</el-form-item>
+				</el-row>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="dialogAcarsDetailVisible = false">确定</el-button>
 			</div>
 		</el-dialog>
 	</el-container>
@@ -175,12 +231,18 @@ export default {
 			company: [],
 			dialogTableVisible: false,
 			dialogFormVisible: false,
+			dialogAcarsDetailVisible: false,
 			gridData: [],
 			editform: {
 				userid: '',
 				ID: '',
 				content: '',
 				timestamp: '',
+			},
+			acars_detail_form: {
+				serial : "-",
+				flight : "-",
+
 			},
 			current_row: 0,
 			loading: false,
@@ -245,7 +307,7 @@ export default {
 		},
 
 		getCompanyOptions() {
-			getCompanyOptions().then(res => {
+			getCompanyOptions({role: 0}).then(res => {
 				this.company_options = res.data.data
 			})
 		},
@@ -258,19 +320,19 @@ export default {
 		},
 		handleEdit() {
 			this.dialogFormVisible = false
-            this.editform.timestamp = new Date().getTime()
+			this.editform.timestamp = new Date().getTime()
 			this.editform.ID = this.current_row.ID
 			this.editform.userid = this.userid
 			this.loading = true
-			postEdit(this.editform).then(res =>{
-				if(res.data.code === 1000){
+			postEdit(this.editform).then(res => {
+				if (res.data.code === 1000) {
 					this.getAllAtc()
 
-                    this.$notify({
-                        title: '成功',
-                        message: '修改成功',
-                        type: 'success'
-                    });
+					this.$notify({
+						title: '成功',
+						message: '修改成功',
+						type: 'success'
+					});
 				}
 			})
 		},
@@ -285,18 +347,40 @@ export default {
 		handleDelete(index, row) {
 			this.dialogFormVisible = false
 			this.loading = true
-			postDelete({userid: this.userid, ID: this.current_row.ID}).then(res =>{
-                if (res.data.code == "1000") {
+			postDelete({ userid: this.userid, ID: this.current_row.ID }).then(res => {
+				if (res.data.code == "1000") {
 					this.getAllAtc()
-                    this.$notify({
-                        title: '成功',
-                        message: '删除成功',
-                        type: 'success'
-                    });
-                }
+					this.$notify({
+						title: '成功',
+						message: '删除成功',
+						type: 'success'
+					});
+				}
 			})
 		},
-
+		handleDetail(row) {
+			var msg = row.Content
+			if (row.Type === "Acars") {
+				//acars解析
+				this.dialogAcarsDetailVisible = true
+				this.acars_detail_form.mode = msg.charAt(0)
+				this.acars_detail_form.address = msg.substr(1,7).replace(/\./g, "")
+				var ack = msg.charAt(8)
+				this.acars_detail_form.ack = ack != '\u0015' ? ack : "None"
+				this.acars_detail_form.label = msg.substr(9,2)
+				var udbi = msg.charAt(11)
+				this.acars_detail_form.udbi = udbi
+				if(udbi < 64){
+					this.acars_detail_form.serial = msg.substr(13, 4)
+					this.acars_detail_form.flight = msg.substr(17, 6)
+					this.acars_detail_form.text = msg.slice(23).slice(0, -1)
+				}else{
+					this.acars_detail_form.text = msg.slice(13).slice(0, -1)
+				}
+			} else {
+				//ads-b解析
+			}
+		}
 	}
 }
 </script>

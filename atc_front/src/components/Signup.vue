@@ -17,7 +17,7 @@
                     :props="com_cas_props"></el-cascader>
             </el-form-item>
             <el-form-item style="width:100%;">
-                <el-button type="primary" style="width:100%;" @click="handleSubmit" :loading="logining">登录</el-button>
+                <el-button type="primary" style="width:100%;" @click="handleSubmit" :loading="logining">注册</el-button>
             </el-form-item>
             <el-form-item>
                 <div>{{ msg }}</div>
@@ -61,6 +61,7 @@ export default {
                         } else if (level === 1) { 
                             requestData.role = node.value;
                             //省市区接口
+
                             getCompanies(requestData).then(res => {
                                 resolve(res.data.data)
                             })

@@ -25,6 +25,7 @@ type Atc struct {
 	Signature string `json:"Signature"`
 	Content   string `json:"Content"`
 	IsValid   bool   `json:"IsValid"`
+	IsIPFS    bool   `json:"IsIPFS"`
 
 	Historys []HistoryItem // 当前edu的历史记录
 }
@@ -144,7 +145,7 @@ func InitService(chaincodeID, channelID string, org *sdk.OrgInfo, sdk *fabsdk.Fa
 }
 
 func InitSetup(configpath string) *ServiceSetup {
-	sdkentity, err := sdk.Setup("../config/config_northchina.yaml", &info)
+	sdkentity, err := sdk.Setup(configpath, &info)
 
 	if err != nil {
 		logger.Println(">> Sdk set error", err)

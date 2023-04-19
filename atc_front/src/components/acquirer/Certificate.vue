@@ -17,13 +17,26 @@
 				style="margin-top: 10px; width: 100%;">
 			</el-input>
 			<el-divider></el-divider>
-			<h3 align="left">Issuer</h3>
-			<el-table :data="issueData" style="width: 50%;">
-				<el-table-column prop="key" label="对象">
-				</el-table-column>
-				<el-table-column prop="value" label="内容">
-				</el-table-column>
-			</el-table>
+			<el-row>
+				<el-col :span="12">
+					<h3 align="left">Issuer</h3>
+					<el-table :data="issueData" style="width: 50%;">
+						<el-table-column prop="key" label="对象">
+						</el-table-column>
+						<el-table-column prop="value" label="内容">
+						</el-table-column>
+					</el-table>
+				</el-col>
+				<el-col  :span="12">
+					<h3 align="left">Algorithm</h3>
+					<el-table :data="algoData" style="width: 50%;">
+						<el-table-column prop="key" label="对象">
+						</el-table-column>
+						<el-table-column prop="value" label="内容">
+						</el-table-column>
+					</el-table>
+				</el-col>
+			</el-row>
 			<el-divider></el-divider>
 			<h3 align="left">公钥</h3>
 			<el-table :data="keyData" style="width: 100%;">
@@ -76,6 +89,13 @@ export default {
 				key: 'ST',
 				value: '-',
 			}],
+			algoData:[{
+				key: "签名算法",
+				value: '-',
+			},{
+				key: "公钥算法",
+				value: '-',
+			}],
 			keyData: [{
 				key: 'X',
 				value: '-',
@@ -120,7 +140,7 @@ export default {
 				// 开启loading
 				this.$set(data, 'loading', true)
 
-				getCompanyOptions().then(res => {
+				getCompanyOptions({role: -1}).then(res => {
 					for (var i = 0; i < res.data.data.length; i++) {
 						res.data.data[i].level = 1
 						res.data.data[i].children = []
@@ -153,6 +173,9 @@ export default {
 					this.keyData[0].length = this.cert_ret.xlength
 					this.keyData[1].value = this.cert_ret.y
 					this.keyData[1].length = this.cert_ret.ylength
+
+					this.algoData[0].value = this.cert_ret.algomap.signature_algorithm
+					this.algoData[1].value = this.cert_ret.algomap.publickey_algorithm
 				})
 			}
 		},
