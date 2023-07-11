@@ -18,6 +18,8 @@ func (t *ServiceSetup) SaveAtc(atc_info Atc) (string, error) {
 		return "", fmt.Errorf("指定的edu对象序列化时发生错误")
 	}
 
+	logger.Println(string(b))
+
 	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "addAtc", Args: [][]byte{b, []byte(eventID)}}
 	respone, err := t.ChannelClient.Execute(req)
 	if err != nil {

@@ -12,7 +12,7 @@ type PublisherController struct {
 }
 
 func (u *PublisherController) PostAtc() {
-	transid, err := models.PostAtc(u.GetString("userid"), u.GetString("msgtype"), u.GetString("content"), u.GetString("timestamp"))
+	transid, err := models.PostAtc(u.GetString("userid"), u.GetString("msgtype"), u.GetString("content"), u.GetString("timestamp"), u.GetString("flight"))
 
 	var ret_code int
 	var ret_data string
@@ -32,8 +32,30 @@ func (u *PublisherController) PostAtc() {
 	u.ServeJSON()
 }
 
+func (u *PublisherController) PostMultiAtc() {
+	transids, err := models.PostMultiAtc(u.GetString("userid"), u.GetString("msgs"), u.GetString("timestamp"))
+	//transid, err := models.PostAtc(u.GetString("userid"), u.GetString("msgs"), u.GetString("timestamp"))
+
+	var ret_code int
+	var ret_data []string
+
+	if err != nil {
+		ret_code = 1001
+		ret_data = nil
+	} else {
+		ret_code = 1000
+		ret_data = transids
+	}
+
+	u.Data["json"] = JsonResponse{
+		Code: ret_code,
+		Data: ret_data,
+	}
+	u.ServeJSON()
+}
+
 func (u *PublisherController) GetAtcs() {
-	paralist := [4]string{u.GetString("publisher"), u.GetString("company"), u.GetString("starttime"), u.GetString("endtime")}
+	paralist := [5]string{u.GetString("publisher"), u.GetString("company"), u.GetString("starttime"), u.GetString("endtime"), u.GetString("flight")}
 
 	atcs := models.GetAtcs(u.GetString("userid"), paralist[:])
 

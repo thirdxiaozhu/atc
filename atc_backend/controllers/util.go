@@ -55,23 +55,23 @@ func (u *UtilController) GetCompanies() {
 	u.ServeJSON()
 }
 
-func (u *UtilController) GetCheckCompanies() {
-	companies := models.GetCompaniesByRole("0")
-
-	var companiesret []Return
-	for _, company := range *companies {
-		ret := Return{}
-		ret.Value = company.Name
-		ret.Label = company.CNname
-		companiesret = append(companiesret, ret)
-	}
-
-	u.Data["json"] = JsonResponse{
-		Code: 1000,
-		Data: companiesret,
-	}
-	u.ServeJSON()
-}
+//func (u *UtilController) GetCheckCompanies() {
+//	companies := models.GetCompaniesByRole("0")
+//
+//	var companiesret []Return
+//	for _, company := range *companies {
+//		ret := Return{}
+//		ret.Value = company.Name
+//		ret.Label = company.CNname
+//		companiesret = append(companiesret, ret)
+//	}
+//
+//	u.Data["json"] = JsonResponse{
+//		Code: 1000,
+//		Data: companiesret,
+//	}
+//	u.ServeJSON()
+//}
 
 func (u *UtilController) GetCheckPublishers() {
 	company_names := strings.Split(u.GetString("company"), ",")

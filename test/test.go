@@ -9,7 +9,7 @@ import (
 )
 
 func del(servicesetup *service.ServiceSetup, ID string) {
-	transid, err := servicesetup.DelAtc(ID)
+	transid, err := servicesetup.DeleteAtc(ID)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -136,7 +136,7 @@ func main() {
 
 	//save(servicesetup, atc)
 	//modify(servicesetup, atc)
-	query(servicesetup, "55a7f921-3dfd-41f0-b6c0-8cad448d93e4")
+	query(servicesetup, "099bc8e9-cefe-4309-b619-2e7713107c49")
 
 	//pb_map := map[string]string{"Publisher": "ec", "Company": "eastchina"}
 	//fmt.Println(pb_map)

@@ -1,0 +1,64 @@
+name: test-network-eastchina
+version: 1.0.0
+client:
+  organization: EastChina
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  EastChina:
+    mspid: EastChinaMSP
+    peers:
+    - info_department.eastchina.atc.com
+    certificateAuthorities:
+    - ca.eastchina.atc.com
+peers:
+  info_department.eastchina.atc.com:
+    url: grpcs://localhost:7051
+    tlsCACerts:
+      pem: |
+          -----BEGIN CERTIFICATE-----
+          MIICXDCCAgKgAwIBAgIRAOnVtz3Ea/D1TJTc8IQb1t8wCgYIKoZIzj0EAwIweDEL
+          MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+          cmFuY2lzY28xGjAYBgNVBAoTEWVhc3RjaGluYS5hdGMuY29tMSAwHgYDVQQDExd0
+          bHNjYS5lYXN0Y2hpbmEuYXRjLmNvbTAeFw0yMzAzMjExNTE2MDBaFw0zMzAzMTgx
+          NTE2MDBaMHgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYD
+          VQQHEw1TYW4gRnJhbmNpc2NvMRowGAYDVQQKExFlYXN0Y2hpbmEuYXRjLmNvbTEg
+          MB4GA1UEAxMXdGxzY2EuZWFzdGNoaW5hLmF0Yy5jb20wWTATBgcqhkjOPQIBBggq
+          hkjOPQMBBwNCAATXZY/onv1RAhshCu8VLVLAQvmht2m1NeaI6Nfc6YWIV/tIKtGC
+          kNApGyeLmkDYtBejWAGxpMSHZt2vTo4++zBno20wazAOBgNVHQ8BAf8EBAMCAaYw
+          HQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMA8GA1UdEwEB/wQFMAMBAf8w
+          KQYDVR0OBCIEILZu8MHR4jdxepAQIJW6hhCoqcie1ArIAH9/iITrvP7gMAoGCCqG
+          SM49BAMCA0gAMEUCIHqvfvmzZCbPsOxAQDt+cSXZEBV3Mi2HCPs20GTnL5WWAiEA
+          vC7B18amtfYhddUcCwaebKC6zY9Kfh5qB34/ETOP5l8=
+          -----END CERTIFICATE-----
+          
+    grpcOptions:
+      ssl-target-name-override: info_department.eastchina.atc.com
+      hostnameOverride: info_department.eastchina.atc.com
+certificateAuthorities:
+  ca.eastchina.atc.com:
+    url: https://localhost:7054
+    caName: eastchina-ca
+    tlsCACerts:
+      pem: 
+        - |
+          -----BEGIN CERTIFICATE-----
+          MIICVjCCAfugAwIBAgIQM+rcGoi4PvhJf+mGF4sKrjAKBggqhkjOPQQDAjB1MQsw
+          CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+          YW5jaXNjbzEaMBgGA1UEChMRZWFzdGNoaW5hLmF0Yy5jb20xHTAbBgNVBAMTFGNh
+          LmVhc3RjaGluYS5hdGMuY29tMB4XDTIzMDMyMTE1MTYwMFoXDTMzMDMxODE1MTYw
+          MFowdTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcT
+          DVNhbiBGcmFuY2lzY28xGjAYBgNVBAoTEWVhc3RjaGluYS5hdGMuY29tMR0wGwYD
+          VQQDExRjYS5lYXN0Y2hpbmEuYXRjLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEH
+          A0IABOpS1rsG6OqhSXz+o7dW7ZfpqrAcJZYBu7u8CEMvSOLgIg6x4dYI0ETkaUiX
+          F6AQbR8lohGFrCBjd6OGc34oskajbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNVHSUE
+          FjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNVHQ4E
+          IgQgQeBePc/MQPMqddDlLNmpSjhfOdPx9y/CyKU33xWcLmYwCgYIKoZIzj0EAwID
+          SQAwRgIhALupQK7qPukGW8rQrB6Y6xZEHjPwOKo1knKDtXlnBvaxAiEAgoGZfXhG
+          IOKWM/fQIi39r3XkJfPvtetT3mMer6IbCJM=
+          -----END CERTIFICATE-----
+          
+    httpOptions:
+      verify: false

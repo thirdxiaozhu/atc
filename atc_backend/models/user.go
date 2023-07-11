@@ -1,6 +1,9 @@
 package models
 
 import (
+	"crypto/md5"
+	"fmt"
+	"io"
 	"service"
 
 	"github.com/google/uuid"
@@ -9,7 +12,7 @@ import (
 type User struct {
 	ID       uint   `orm:"column(id);auto"`
 	Userid   string `orm:"column(name);unique;size(20)"`
-	Password string `orm:"column(password);size(16)"`
+	Password string `orm:"column(password);size(256)"`
 	Company  string `orm:"column(company);size(20)"`
 	UUID     string `orm:"column(uuid);size(64)"`
 }
@@ -34,10 +37,10 @@ func init() {
 		"csair":      "/root/go/src/atc/fabric/crypto-config/peerOrganizations/csair.atc.com/users/User1@csair.atc.com/tls/",
 	}
 	configpath_map = map[string]string{
-		"eastchina":  "../../config/config_eastchina.yaml",
-		"northchina": "../../config/config_northchina.yaml",
-		"airchina":   "../../config/config_airchina.yaml",
-		"csair":      "../../config/config_csair.yaml"}
+		"eastchina":  "/root/go/src/atc/config/config_eastchina.yaml",
+		"northchina": "/root/go/src/atc/config/config_northchina.yaml",
+		"airchina":   "/root/go/src/atc/config/config_airchina.yaml",
+		"csair":      "/root/go/src/atc/config/config_csair.yaml"}
 	setup_map = make(map[string]*service.ServiceSetup)
 }
 
@@ -46,11 +49,13 @@ func Login(userid, password string) *Login_Return {
 	user := User{}
 	err := DBH.QueryOneByField(&user, "user", "name", userid)
 	if err == nil {
-		if user.Password != password {
+		h := md5.New()
+		io.WriteString(h, password)
+		if user.Password != fmt.Sprintf("%x", h.Sum(nil)) {
 			return nil
 		}
 		/* 初始化服务 */
-		setup := service.InitSetup(configpath_map[user.Company])
+		setup := service.InitSetup(configpath_map[user.Company], user.Company)
 		if setup == nil {
 			return nil
 		}
@@ -77,9 +82,19 @@ func Login(userid, password string) *Login_Return {
 	return nil
 }
 
-func Signup(u *User) bool {
+func Signup(userid, password, company string) bool {
 	//var uu User
-	res := DBH.Insert(u)
+
+	h := md5.New()
+	io.WriteString(h, password)
+
+	user := User{
+		Userid:   userid,
+		Password: fmt.Sprintf("%x", h.Sum(nil)),
+		Company:  company,
+	}
+	logger.Println(user)
+	res := DBH.Insert(&user)
 	return res
 }
 

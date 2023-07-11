@@ -22,6 +22,11 @@ func init() {
 				"post:PostAtc",
 			),
 			beego.NSRouter(
+				"/postmultiatc",
+				&controllers.PublisherController{},
+				"post:PostMultiAtc",
+			),
+			beego.NSRouter(
 				"/getatc",
 				&controllers.PublisherController{},
 				"get:GetAtcs",
@@ -72,11 +77,11 @@ func init() {
 				&controllers.UtilController{},
 				"get:GetCompanies",
 			),
-			beego.NSRouter(
-				"/getcheckcompanies",
-				&controllers.UtilController{},
-				"get:GetCheckCompanies",
-			),
+			//beego.NSRouter(
+			//	"/getcompanies",
+			//	&controllers.UtilController{},
+			//	"get:GetCheckCompanies",
+			//),
 			beego.NSRouter(
 				"/getcheckpublishers",
 				&controllers.UtilController{},

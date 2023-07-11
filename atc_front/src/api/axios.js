@@ -48,7 +48,7 @@ export function postLogin(param){
     return axios.request({
         method: "POST",
         url: "/api/user/login",
-        params : param
+        data : param
     })
 }
 
@@ -56,7 +56,15 @@ export function postAtc(param){
     return axios.request({
         method: "POST",
         url: "/api/publisher/postatc",
-        params: param
+        data : param
+    })
+}
+
+export function postMultiAtc(param){
+    return axios.request({
+        method: "POST",
+        url: "/api/publisher/postmultiatc",
+        data : param
     })
 }
 
@@ -69,9 +77,11 @@ export function getAtc(param){
 }
 
 export function getCompanyOptions(param){
+    console.log(param)
     return axios.request({
         method: "GET",
-        url: "/api/util/getcheckcompanies",
+        //url: "/api/util/getcompanies",
+        url: "/api/util/company",
         params:param
     })
 }

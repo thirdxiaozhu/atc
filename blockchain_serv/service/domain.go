@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"sdk"
+	"strings"
 	"time"
 
 	"github.com/beego/beego/v2/core/logs"
@@ -24,7 +25,9 @@ type Atc struct {
 	Address   string `json:"Address"`
 	Signature string `json:"Signature"`
 	Content   string `json:"Content"`
+	Flight    string `json:"Flight"`
 	IsValid   bool   `json:"IsValid"`
+	IsIPFS    bool   `json:"IsIPFS"`
 
 	Historys []HistoryItem // 当前edu的历史记录
 }
@@ -143,21 +146,36 @@ func InitService(chaincodeID, channelID string, org *sdk.OrgInfo, sdk *fabsdk.Fa
 	return handler, nil
 }
 
-func InitSetup(configpath string) *ServiceSetup {
-	sdkentity, err := sdk.Setup("../config/config_northchina.yaml", &info)
+func InitSetup(configpath, company string) *ServiceSetup {
+	sdkentity, err := sdk.Setup(configpath, &info)
+
+	num := getOrgNum(company)
+
+	if num < 0 {
+		return nil
+	}
 
 	if err != nil {
 		logger.Println(">> Sdk set error", err)
 		return nil
 	}
 
-	servicesetup, err := InitService(info.ChaincodeID, info.ChannelID, info.Orgs[1], sdkentity)
+	servicesetup, err := InitService(info.ChaincodeID, info.ChannelID, info.Orgs[num], sdkentity)
 	if err != nil {
 		logger.Println(">> init chaincode error", err)
 		return nil
 	}
 
 	return servicesetup
+}
+
+func getOrgNum(company string) int {
+	for index, org := range info.Orgs {
+		if strings.ToLower(org.OrgName) == company {
+			return index
+		}
+	}
+	return -1
 }
 
 func Save(servicesetup *ServiceSetup, atc Atc) (string, error) {

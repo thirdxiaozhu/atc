@@ -4,7 +4,6 @@ import (
 	"atc_backend/models"
 	"strconv"
 
-	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -69,25 +68,25 @@ func (u *UserController) Login() {
 	//	Userid:   u.GetString("userid"),
 	//	Password: u.GetString("userid"),
 	//}
-	logger.Println(u.GetString("userid"))
+	logger.Println(u.GetString("userid"), u.GetString("password"), u.Ctx.Request.PostForm)
 	log_ret := models.Login(u.GetString("userid"), u.GetString("password"))
-	u.Data["json"] = JsonResponse{
-		Code: 1000,
-		Data: *log_ret,
+
+	if log_ret != nil {
+		u.Data["json"] = JsonResponse{
+			Code: 1000,
+			Data: *log_ret,
+		}
+	} else {
+		u.Data["json"] = JsonResponse{
+			Code: 1001,
+		}
 	}
 	u.ServeJSON()
 }
 
 func (u *UserController) Signup() {
-	logger := logs.GetLogger()
-	logger.Println(u.GetString("userid"), u.GetString("password"), u.GetString("company"))
-	user := models.User{
-		Userid:   u.GetString("userid"),
-		Password: u.GetString("password"),
-		Company:  u.GetString("company"),
-	}
 	var res JsonResponse
-	result := models.Signup(&user)
+	result := models.Signup(u.GetString("userid"), u.GetString("password"), u.GetString("company"))
 	if result == false {
 		res.Code = 1001
 		res.Data = "该用户已被注册"

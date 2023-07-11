@@ -246,7 +246,7 @@ export default {
 		},
 
 		getCompanyOptions() {
-			getCompanyOptions().then(res => {
+			getCompanyOptions({role: 0}).then(res => {
 				this.company_options = res.data.data
 			})
 		},

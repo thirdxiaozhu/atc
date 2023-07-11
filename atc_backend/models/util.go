@@ -11,17 +11,27 @@ import (
 )
 
 type Cert struct {
-	Content   string            `json:"content"`
-	Issuermap map[string]string `json:"issmap"`
-	X         string            `json:"x"`
-	Y         string            `json:"y"`
-	Xlength   int               `json:"xlength"`
-	Ylength   int               `json:"ylength"`
+	Content      string            `json:"content"`
+	Issuermap    map[string]string `json:"issmap"`
+	Algorithmmap map[string]string `json:"algomap"`
+	X            string            `json:"x"`
+	Y            string            `json:"y"`
+	Xlength      int               `json:"xlength"`
+	Ylength      int               `json:"ylength"`
 }
 
 func GetCompaniesByRole(role string) *[]Company {
 	companies := []Company{}
-	err := DBH.QueryAllByField(&companies, "company", "role", role)
+
+	var err error
+
+	if role != "-1" {
+		err = DBH.QueryAllByField(&companies, "company", "role", role)
+
+	} else {
+		err = DBH.QueryAll(&companies, "company")
+	}
+
 	if err != nil {
 		return nil
 	}
@@ -68,10 +78,13 @@ func GetCert(user_name string) *Cert {
 	certBlock, _ := pem.Decode(certBytes)
 	//解析证书
 	cert, err := x509.ParseCertificate(certBlock.Bytes)
+
+	logger.Print(cert.SignatureAlgorithm, cert.PublicKeyAlgorithm, cert.Subject)
 	if err != nil {
 		return nil
 	}
 	cert_ret.Issuermap = getIssusers(cert.Issuer)
+	cert_ret.Algorithmmap = map[string]string{"signature_algorithm": cert.SignatureAlgorithm.String(), "publickey_algorithm": cert.PublicKeyAlgorithm.String()}
 	switch pub := cert.PublicKey.(type) {
 	case *ecdsa.PublicKey:
 		cert_ret.X = pub.X.String()

@@ -18,6 +18,9 @@ type Atc struct {
 	Type      string `json:"Type"`
 	Address   string `json:"Address"`
 	Signature string `json:"Signature"`
+	IsIPFS    bool   `json:"IsIPFS"`
+	Flight    string `json:"Flight"`
+	Content   string `json:"Content"`
 
 	Historys []HistoryItem // 当前edu的历史记录
 }
@@ -312,6 +315,8 @@ func (t *AtcChaincode) updateAtc(stub shim.ChaincodeStubInterface, args []string
 	result.Time = atcinfo.Time
 	result.Address = atcinfo.Address
 	result.Signature = atcinfo.Signature
+	result.Content = atcinfo.Content
+	result.IsIPFS = atcinfo.IsIPFS
 
 	_, bl = PutAtc(stub, result)
 	if !bl {
