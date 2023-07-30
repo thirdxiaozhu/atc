@@ -41,6 +41,42 @@ func init() {
 				&controllers.PublisherController{},
 				"post:PostDelete",
 			),
+			beego.NSRouter(
+				"/getarns",
+				&controllers.PublisherController{},
+				"get:GetArns",
+			),
+			beego.NSRouter(
+				"/getroutes",
+				&controllers.PublisherController{},
+				"get:GetRoutes",
+			),
+			beego.NSRouter(
+				"/getauths",
+				&controllers.PublisherController{},
+				"get:GetAuths",
+			),
+
+			beego.NSRouter(
+				"/getlinkoptions",
+				&controllers.PublisherController{},
+				"get:GetLinkOptions",
+			),
+			beego.NSRouter(
+				"/postreglink",
+				&controllers.PublisherController{},
+				"post:PostRegLink",
+			),
+			beego.NSRouter(
+				"/getreglink",
+				&controllers.PublisherController{},
+				"get:GetRegLink",
+			),
+			//beego.NSRouter(
+			//	"/getlinks",
+			//	&controllers.PublisherController{},
+			//	"get:GetLinks",
+			//),
 		),
 
 		beego.NSNamespace("/sundries"),

@@ -10,6 +10,9 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	_ "github.com/go-sql-driver/mysql"
 	shell "github.com/ipfs/go-ipfs-api"
+
+	"gorm.io/driver/mysql" // gorm mysql 驱动包
+	"gorm.io/gorm"         // gorm
 )
 
 type DBHandle struct {
@@ -20,6 +23,9 @@ var (
 	DBH    DBHandle
 	config Config
 	sh     *shell.Shell
+
+	G_db *gorm.DB
+	err  error
 )
 
 func init() {
@@ -28,6 +34,7 @@ func init() {
 	config = ReadConfig("/root/go/src/atc/atc_backend/models/config.json")
 	initDBH()
 	initIPFS()
+	initGorm()
 
 	for _, com := range getCompanies() {
 		DBH.Insert(&com)
@@ -53,6 +60,30 @@ func initDBH() {
 
 func initIPFS() {
 	sh = shell.NewShell("localhost:5001")
+}
+
+func initGorm() {
+	// MySQL 配置信息
+	username := "root"  // 账号
+	password := "root"  // 密码
+	host := "127.0.0.1" // 地址
+	port := 3306        // 端口
+	DBname := "atc"     // 数据库名称
+	timeout := "10s"    // 连接超时，10秒
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local&timeout=%s", username, password, host, port, DBname, timeout)
+	// Open 连接
+	G_db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect mysql.")
+	}
+	G_db.AutoMigrate(&Arn{})
+	G_db.AutoMigrate(&Route{})
+	G_db.AutoMigrate(&Auth{})
+	G_db.AutoMigrate(&Flight{})
+	G_db.AutoMigrate(&Link{})
+	G_db.Create(getArns())
+	G_db.Create(getRoutes())
+	G_db.Create(getAuths())
 }
 
 // @Title Insert

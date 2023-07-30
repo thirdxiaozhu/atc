@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"service"
+	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
@@ -29,6 +30,21 @@ type MultiAtcPrase struct {
 	Type    string `json:"Type"`
 	Message string `json:"Message"`
 	Flight  string `json:"Flight"`
+}
+
+type LinkOptions struct {
+	Arns   []Arn   `json:"arns"`
+	Routes []Route `json:"routes"`
+	Auths  []Auth  `json:"auths"`
+}
+
+type RegistLinksDetail struct {
+	Arn         string   `json:"arn"`
+	Flight      string   `json:"flight"`
+	Company     string   `json:"company"`
+	Origin      string   `json:"origin"`
+	Destination string   `json:"dest"`
+	Auth        []string `json:"auths"`
 }
 
 var paraTags map[int]string
@@ -122,6 +138,137 @@ func GetAtcs(userid string, paralist []string) *[]service.Atc {
 	}
 
 	return &atcs
+}
+
+func GetArns() *[]Arn {
+	arns := []Arn{}
+
+	find := G_db.Order("ID asc").Find(&arns)
+
+	if find.Error != nil {
+		fmt.Printf("find查询失败，err：%v\n", find.Error)
+	} else {
+		fmt.Printf("find查询成功,共查询到%v条\n", find.RowsAffected)
+	}
+
+	return &arns
+}
+
+func GetRoutes() *[]Route {
+	routes := []Route{}
+
+	find := G_db.Order("ID asc").Find(&routes)
+
+	if find.Error != nil {
+		fmt.Printf("find查询失败，err：%v\n", find.Error)
+	} else {
+		fmt.Printf("find查询成功,共查询到%v条\n", find.RowsAffected)
+	}
+
+	return &routes
+}
+func GetAuths() *[]Auth {
+	auths := []Auth{}
+
+	find := G_db.Order("ID asc").Find(&auths)
+
+	if find.Error != nil {
+		fmt.Printf("find查询失败，err：%v\n", find.Error)
+	} else {
+		fmt.Printf("find查询成功,共查询到%v条\n", find.RowsAffected)
+	}
+
+	return &auths
+}
+
+func GetLinkOptions() *LinkOptions {
+	link_options := LinkOptions{}
+
+	arns_p := GetArns()
+	routes_p := GetRoutes()
+	auths_p := GetAuths()
+
+	link_options.Arns = *arns_p
+	link_options.Routes = *routes_p
+	link_options.Auths = *auths_p
+
+	return &link_options
+}
+
+func RegistLink(arn, route, auths string) bool {
+	arn_i, _ := strconv.Atoi(arn)
+	route_i, _ := strconv.Atoi(route)
+
+	auth_ss := strings.Split(auths, ",")
+	logger.Println(auth_ss)
+
+	var auth_is [5]uint
+
+	for index, auth_s := range auth_ss {
+		auth_i, _ := strconv.Atoi(auth_s)
+		logger.Println(index, uint(auth_i))
+		auth_is[index] = uint(auth_i)
+	}
+
+	flight := Flight{
+		Arn:   uint(arn_i),
+		Route: uint(route_i),
+	}
+
+	G_db.Create(&flight)
+
+	for _, auth_i := range auth_is {
+		if auth_i == 0 {
+			break
+		}
+
+		link := Link{
+			Flight: flight.ID,
+			Auth:   auth_i,
+		}
+		G_db.Create(&link)
+	}
+	return true
+}
+
+func GetRegistLink() *[]RegistLinksDetail {
+
+	reg_link_details := []RegistLinksDetail{}
+	flights := []Flight{}
+
+	G_db.Find(&flights)
+
+	logger.Println(len(flights))
+
+	for _, flight := range flights {
+		rld := RegistLinksDetail{}
+
+		arn := Arn{}
+		route := Route{}
+		links := []Link{}
+
+		G_db.First(&arn, flight.Arn)
+		G_db.First(&route, flight.Route)
+		G_db.Where("flight = ?", flight.ID).Find(&links)
+
+		for _, link := range links {
+			auth := Auth{}
+			G_db.First(&auth, link.Auth)
+
+			rld.Auth = append(rld.Auth, auth.Auth_name)
+		}
+
+		rld.Arn = arn.Flight_Arn
+		rld.Company = arn.Company
+		rld.Flight = route.Flight_num
+		rld.Origin = route.Origin
+		rld.Destination = route.Destination
+
+		reg_link_details = append(reg_link_details, rld)
+	}
+
+	return &reg_link_details
+
 }
 
 func EditAtc(paralist []string) string {

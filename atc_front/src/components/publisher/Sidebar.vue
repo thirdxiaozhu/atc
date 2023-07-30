@@ -1,31 +1,53 @@
 <template>
-  <el-menu default-active="2" class="el-menu-vertical-demo" style=" margin-top: 1px;" router :class="side_menu">
-    <el-menu-item>
-      <i class="el-icon-setting"></i>
-      <!-- <span slot="title">发布信息</span>-->
-      <router-link to="/publisher/postatc">发布信息</router-link>
-    </el-menu-item>
-    <el-menu-item>
-      <i class="el-icon-setting"></i>
-      <!-- <span slot="title">查看信息</span>-->
-      <router-link to="/publisher/checkatc">查看信息</router-link>
-    </el-menu-item>
-    <el-submenu>
-      <template slot="title">
-        <i class="el-icon-location"></i>
-        <span>数字认证</span>
-      </template>
-      <el-menu-item>
-        <i class="el-icon-setting"></i>
-        <router-link to="/publisher/prikey">我的</router-link>
-      </el-menu-item>
-      <el-menu-item>
-        <i class="el-icon-setting"></i>
-        <router-link to="/publisher/certificate">查看证书</router-link>
-      </el-menu-item>
-    </el-submenu>
+	<el-menu default-active="2" class="el-menu-vertical-demo" style=" margin-top: 1px;" router :class="side_menu">
+		<el-menu-item>
+			<i class="el-icon-setting"></i>
+			<!-- <span slot="title">发布信息</span>-->
+			<router-link to="/publisher/postatc">发布信息</router-link>
+		</el-menu-item>
+		<el-menu-item>
+			<i class="el-icon-setting"></i>
+			<!-- <span slot="title">查看信息</span>-->
+			<router-link to="/publisher/checkatc">查看信息</router-link>
+		</el-menu-item>
+		<el-submenu>
+			<template slot="title">
+				<i class="el-icon-location"></i>
+				<span>数字认证</span>
+			</template>
+			<el-menu-item>
+				<i class="el-icon-setting"></i>
+				<router-link to="/publisher/prikey">我的</router-link>
+			</el-menu-item>
+			<el-menu-item>
+				<i class="el-icon-setting"></i>
+				<router-link to="/publisher/certificate">查看证书</router-link>
+			</el-menu-item>
+		</el-submenu>
+		<el-submenu>
+			<template slot="title">
+				<i class="el-icon-location"></i>
+				<span>基础表</span>
+			</template>
+			<el-menu-item>
+				<i class="el-icon-setting"></i>
+				<router-link to="/publisher/arn">航班</router-link>
+			</el-menu-item>
+			<el-menu-item>
+				<i class="el-icon-setting"></i>
+				<router-link to="/publisher/route">航线</router-link>
+			</el-menu-item>
+			<el-menu-item>
+				<i class="el-icon-setting"></i>
+				<router-link to="/publisher/auth">权限</router-link>
+			</el-menu-item>
+		</el-submenu>
+		<el-menu-item>
+			<i class="el-icon-setting"></i>
+			<router-link to="/publisher/link">连表</router-link>
+		</el-menu-item>
 
-  </el-menu>
+	</el-menu>
 </template>
 
 <script>

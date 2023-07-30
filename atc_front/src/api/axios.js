@@ -127,3 +127,59 @@ export function postDelete(param){
         params:param
     })
 }
+
+export function getArns(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/publisher/getarns",
+        params: param
+    })
+}
+
+export function getRoutes(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/publisher/getroutes",
+        params: param
+    })
+}
+
+export function getAuths(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/publisher/getauths",
+        params: param
+    })
+}
+
+export function getLinks(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/publisher/getlinks",
+        params: param
+    })
+}
+
+export function getLinkOptions(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/publisher/getlinkoptions",
+        params: param
+    })
+}
+
+export function postRegLink(param){
+    return axios.request({
+        method: "POST",
+        url: "/api/publisher/postreglink",
+        data : param
+    })
+}
+
+export function getRegistLink(param){
+    return axios.request({
+        method: "GET",
+        url: "/api/publisher/getreglink",
+        params : param
+    })
+}

@@ -86,3 +86,59 @@ func (u *PublisherController) PostDelete() {
 	}
 	u.ServeJSON()
 }
+
+func (u *PublisherController) GetArns() {
+	arn_p := models.GetArns()
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: &arn_p,
+	}
+	u.ServeJSON()
+}
+
+func (u *PublisherController) GetRoutes() {
+	routes_p := models.GetRoutes()
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: &routes_p,
+	}
+	u.ServeJSON()
+}
+func (u *PublisherController) GetAuths() {
+	auth_p := models.GetAuths()
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: &auth_p,
+	}
+	u.ServeJSON()
+}
+
+func (u *PublisherController) GetLinkOptions() {
+
+	options := models.GetLinkOptions()
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: &options,
+	}
+	u.ServeJSON()
+}
+
+func (u *PublisherController) PostRegLink() {
+	ret := models.RegistLink(u.GetString("opt_arn"), u.GetString("opt_route"), u.GetString("opt_auth"))
+
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: ret,
+	}
+	u.ServeJSON()
+}
+
+func (u PublisherController) GetRegLink() {
+	ret := models.GetRegistLink()
+	logger.Println(ret)
+	u.Data["json"] = JsonResponse{
+		Code: 1000,
+		Data: ret,
+	}
+	u.ServeJSON()
+}

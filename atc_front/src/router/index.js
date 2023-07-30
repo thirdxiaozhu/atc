@@ -12,6 +12,10 @@ import Postatc from '@/components/publisher/Postatc'
 import Checkatc from '@/components/publisher/Checkatc'
 import Certificate from '@/components/publisher/Certificate'
 import Prikey  from '@/components/publisher/Prikey'
+import Arn  from '@/components/publisher/Arn'
+import Route  from '@/components/publisher/Route'
+import Auth  from '@/components/publisher/Auth'
+import Link  from '@/components/publisher/Link'
 
 import AcquirerView from '@/view/AcquirerView'
 import A_Main from '@/components/acquirer/Main'
@@ -86,9 +90,24 @@ export default new Router({
 					component: Certificate,
 				},
 				{
-					path: "prikey",
-					name: "Prikey",
-					component: Prikey,
+					path: "arn",
+					name: "Arn",
+					component: Arn,
+				},
+				{
+					path: "route",
+					name: "Route",
+					component: Route,
+				},
+				{
+					path: "auth",
+					name: "Auth",
+					component: Auth,
+				},
+				{
+					path: "link",
+					name: "Link",
+					component: Link,
 				}
 			]
 		},
